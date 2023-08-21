@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "oremi-discovery-python"
+version = "1.0.0.dev0"
+description = "Oremi Discovery Client for Python"
+authors = ["Sébastien Demanou <demsking@gmail.com>"]
+license = "Apache-2.0"
+readme = "README.md"
+packages = [{include = "oremi_discovery_python"}]
+
+[[tool.poetry.source]]
+name = "test"
+url = "https://test.pypi.org/simple/"
+secondary = true
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.11"
+oremi-core = "^1.0.0.dev7"
+pydantic = "^2.2.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

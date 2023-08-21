@@ -1,0 +1,13 @@
+venv/
+cache_dir/
+build/
+.nix-node/
+htmlcov/
+dist/
+__pycache__/
+.ruff_cache/
+*.egg-info/
+.directory
+.coverage
+.direnv/
+*.log

@@ -1,0 +1,104 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "oremi-discovery"
+version = "1.0.0.dev1"
+description = "A robust WebSocket-powered service discovery solution"
+keywords = ["assistant", "nlp", "nlu", "conversational"]
+authors = ["Sébastien Demanou <demsking@gmail.com>"]
+license = "Apache-2.0"
+readme = "README.md"
+repository = "https://gitlab.com/demsking/oremi-discovery"
+documentation = "https://gitlab.com/demsking/oremi-discovery/-/blob/main/README.md"
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Topic :: Software Development :: Localization",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3.10",
+]
+
+packages = [
+  { include = "oremi_discovery" },
+]
+
+[tool.poetry.scripts]
+poetry = "poetry.console.application:main"
+oremi-discovery = 'oremi_discovery:main'
+
+[tool.poetry.urls]
+"Say Thanks!" = "https://www.buymeacoffee.com/demsking"
+"Source" = "https://gitlab.com/demsking/oremi-discovery"
+"Tracker" = "https://gitlab.com/demsking/oremi-discovery/-/issues"
+
+[[tool.poetry.source]]
+name = "test"
+url = "https://test.pypi.org/simple/"
+secondary = true
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.11"
+websockets = "^11.0.3"
+pydantic = "2.0.3"
+oremi-core = "^1.0.0.dev11"
+
+[tool.poetry.group.dev.dependencies]
+pyyaml = "^6.0"
+pytest-mock = "^3.10.0"
+pytest = "^7.3.1"
+pytest-cov = "^4.0.0"
+pluggy = "^1.0.0"
+pytest-asyncio = "^0.21.0"
+# pylint = {extras = ["spelling"], version = "^2.17.4"}
+# pylint-pydantic = "^0.2.4"
+
+[tool.pytest.ini_options]
+# Function starting with the following pattern are considered for test cases.
+python_functions = "test_"
+
+[tool.ruff]
+fix = true
+target-version = "py310"
+
+# Only enable rules that have safe autofixes;
+# only enable rules that are relevant to stubs
+select = [
+  "F401",   # Remove unused imports
+  "UP004",  # Remove explicit `object` inheritance
+  "UP006",  # PEP-585 autofixes
+  "UP007",  # PEP-604 autofixes
+  "UP013",  # Class-based syntax for TypedDicts
+  "UP014",  # Class-based syntax for NamedTuples
+  "UP019",  # Use str over typing.Text
+  "UP035",  # import from typing, not typing_extensions, wherever possible
+  "UP039",  # don't use parens after a class definition with no bases
+  "PYI009",  # use `...`, not `pass`, in empty class bodies
+  "PYI010",  # function bodies must be empty
+  "PYI012",  # class bodies must not contain `pass`
+  "PYI013",  # non-empty class bodies must not contain `...`
+  "PYI020",  # quoted annotations are always unnecessary in stubs
+  "PYI025",  # always alias `collections.abc.Set` as `AbstractSet` when importing it
+  "PYI032",  # use `object`, not `Any`, as the second parameter to `__eq__`
+]
+
+ignore = [
+  "E501",   # ignore line too long
+  "D100",   # ignore missing docstrings in public module
+  "D104",   # ignore missing docstrings in public package
+  "D105",   # ignore missing docstrings in magic methods
+  "RUF005", # admittedly an optimization of code rather than a fail
+]
+
+line-length = 128
+
+[tool.ruff.flake8-quotes]
+docstring-quotes = "single"
+inline-quotes = "single"
+
+[tool.ruff.pydocstyle]
+convention = "google"
