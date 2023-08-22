@@ -1,7 +1,7 @@
 APP_VERSION := $(shell python oremi_discovery/version.py)
 IMAGE_NAME := demsking/oremi-discovery
 
-.PHONY: all clean tests install test
+.PHONY: all clean tests install test image
 
 # Start the development environment using tmuxinator
 env:
@@ -64,11 +64,11 @@ build/images/$(IMAGE_NAME).tar.gz: image.nix
 	mkdir -p $(shell dirname $@)
 	nix-build -v -A docker --out-link $@ $<
 	$@ | docker load
-
-image: build/images/$(IMAGE_NAME).tar.gz
 	docker tag $(IMAGE_NAME):$(APP_VERSION) $(IMAGE_NAME):latest
 
-publish-image: images
+image: build/images/$(IMAGE_NAME).tar.gz
+
+publish-image:
 	git commit . -m "Release $(APP_VERSION)"
 	git tag v$(APP_VERSION)
 	docker push $(IMAGE_NAME):$(APP_VERSION)
