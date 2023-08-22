@@ -13,8 +13,8 @@ systems architecture.
 
 ## Table of Contents
 
-- [Install](#install)
-- [Usage](#usage)
+- [Getting Started with Oremi Discovery](#getting-started-with-oremi-discovery)
+- [Starting the Server with Certificates](#starting-the-server-with-certificates)
 - [JSON-RPC API](#json-rpc-api)
   * [`register` Method](#register-method)
   * [`subscribe` Method](#subscribe-method)
@@ -24,23 +24,31 @@ systems architecture.
 - [Versioning](#versioning)
 - [License](#license)
 
-## Install
+## Getting Started with Oremi Discovery
 
-To install the Oremi Discovery service, you have two options:
+The easiest way to use Oremi Discovery is with Docker. Start with Docker for a
+quick setup. Follow these steps:
 
-**1. Install the package from PyPI:**
+**Using Docker**
 
-```sh
-pip install oremi-discovery
-```
-
-**2. Use the Docker image `demsking/oremi-discovery`:**
+Use the official Docker image `demsking/oremi-discovery`. Open your terminal
+and run:
 
 ```sh
 docker run -d -p 5105:5105 demsking/oremi-discovery
 ```
 
-## Usage
+This fetches Oremi Discovery and starts it on port `5105`.
+
+**Alternative Installation**
+
+If you prefer installing Oremi Discovery directly:
+
+```sh
+pip install oremi-discovery
+```
+
+After installation, start Oremi Discovery using the provided command.
 
 ```sh
 usage: oremi-discovery [-h] [--host HOST] [-p PORT] [--cert-file CERT_FILE] [--key-file KEY_FILE] [--password PASSWORD]
@@ -60,6 +68,58 @@ options:
   --verbose             Enable verbose logging.
   -v, --version         Show the version of the application.
 ```
+
+## Starting the Server with Certificates
+
+To start the Oremi Discovery server with a certificate, you can use the
+`--cert-file` and `--key-file` options to specify the certificate and private
+key files. Additionally, if your private key is password-protected, you can use
+the `--password` option to provide the password. Here's how to proceed:
+
+1. **Generate a Self-Signed SSL Certificate (For Testing):**
+
+   If you're testing Oremi Discovery locally, you can generate a self-signed
+   SSL certificate.
+   Follow these steps to generate a self-signed certificate using OpenSSL:
+
+   ```sh
+   sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+      -keyout /path/to/localhost.key \
+      -out /path/to/localhost.crt
+   ```
+
+   This command generates a private key (key.pem) and a self-signed certificate
+   (cert.pem) that are valid for 365 days. Make sure to enter appropriate
+   details when prompted, such as your organization's name and domain.
+
+2. **Start the Server using Docker:**
+
+   The quickest way to start the Oremi Discovery server with certificates is by
+   using Docker. Run the following command in your terminal:
+
+   ```sh
+   docker run -d \
+      -p 5105:5105 \
+      -v /path/to/cert.pem:/cert.pem \
+      -v /path/to/key.pem:/key.pem \
+    demsking/oremi-discovery \
+      --cert-file /cert.pem \
+      --key-file /key.pem \
+      --password your_private_key_password
+   ```
+
+   > Replace `/path/to/cert.pem`, `/path/to/key.pem`, and
+   > `your_private_key_password` with the appropriate values.
+
+   This command mounts the certificate and key files into the Docker container
+   and starts the server.
+
+> Remember that self-signed certificates are suitable for testing and
+> development purposes.
+> For production deployments, consider obtaining a trusted SSL certificate from
+> a Certificate Authority (CA) like [Let's Encrypt](https://letsencrypt.org/).
+> Let's Encrypt provides free and automated certificates that are recognized by
+> most browsers.
 
 ## JSON-RPC API
 

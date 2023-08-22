@@ -63,7 +63,7 @@ in
         package-version = linuxPkgs.oremi-discovery.version;
         maintainer = "Sébastien Demanou <demsking@gmail.com>";
       };
-      Cmd = [ linuxPkgs.oremi-discovery.pname "--host" "0.0.0.0" "--port" SERVICE_PORT ];
+      Entrypoint = [ linuxPkgs.oremi-discovery.pname "--host" "0.0.0.0" "--port" SERVICE_PORT ];
     };
   };
 }

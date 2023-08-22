@@ -7,8 +7,22 @@ IMAGE_NAME := demsking/oremi-discovery
 env:
 	tmuxinator
 
-start:
-	poetry run oremi-discovery --verbose --host 0.0.0.0
+ssl/localhost.crt:
+	mkdir -p $(shell dirname $@)
+	openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+	   -keyout ssl/localhost.pem \
+	   -out $@
+
+start-wss: ssl/localhost.crt
+	poetry run oremi-discovery \
+	   --verbose \
+	   --host 0.0.0.0 \
+	   --port 5106 \
+	   --cert-file $< \
+	   --key-file ssl/localhost.pem
+
+start-ws:
+	poetry run oremi-discovery --verbose --host 0.0.0.0 --port 5105
 
 client:
 	python -m examples.client

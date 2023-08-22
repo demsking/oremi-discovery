@@ -70,20 +70,21 @@ Therefore:
 
 ## Makefile targets
 
-| Target            | Description                                                            |
-|-------------------|------------------------------------------------------------------------|
-| env               | Start the development environment using tmuxinator.                    |
-| start             | Start the test server.                                                 |
-| client            | Start the test client.                                                 |
-| lint              | Run linting checks on the codebase using pre-commit.                   |
-| fix               | Automatically fix any linting issues found by ruff.                    |
-| test              | Run tests using pytest.                                                |
-| coverage          | Generate a coverage report for the codebase using pytest.              |
-| coverage-html     | Generate an HTML coverage report for the codebase using pytest.        |
-| outdated          | Show outdated dependencies using poetry.                               |
-| clean             | Clean up build artifacts and temporary files.                          |
-| dist              | Build a distribution of the project using poetry and twine.            |
-| publish           | Publish a distribution of the project to TestPyPI using twine.         |
+| Target          | Description                                                            |
+|-----------------|------------------------------------------------------------------------|
+| env             | Start the development environment using tmuxinator.                    |
+| start-ws        | Start the test server.                                                 |
+| start-wss       | Start the test server over SSL.                                        |
+| client          | Start the test client.                                                 |
+| lint            | Run linting checks on the codebase using pre-commit.                   |
+| fix             | Automatically fix any linting issues found by ruff.                    |
+| test            | Run tests using pytest.                                                |
+| coverage        | Generate a coverage report for the codebase using pytest.              |
+| coverage-html   | Generate an HTML coverage report for the codebase using pytest.        |
+| outdated        | Show outdated dependencies using poetry.                               |
+| clean           | Clean up build artifacts and temporary files.                          |
+| dist            | Build a distribution of the project using poetry and twine.            |
+| publish         | Publish a distribution of the project to TestPyPI using twine.         |
 
 
 Please see the [Makefile](Makefile) for the full list of targets.

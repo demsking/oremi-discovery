@@ -4,6 +4,7 @@ build/
 .nix-node/
 htmlcov/
 dist/
+ssl/
 __pycache__/
 .ruff_cache/
 *.egg-info/

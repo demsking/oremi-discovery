@@ -222,14 +222,14 @@ files = [
 
 [[package]]
 name = "oremi-core"
-version = "1.0.0.dev12"
+version = "1.0.0.dev13"
 description = "The cornerstone of the Oremi ecosystem"
 category = "main"
 optional = false
 python-versions = ">=3.10,<3.11"
 files = [
-    {file = "oremi_core-1.0.0.dev12-py3-none-any.whl", hash = "sha256:88762f5235bed81051c8c1b146e671a914541a3a47692bddaad0a0d90fd94590"},
-    {file = "oremi_core-1.0.0.dev12.tar.gz", hash = "sha256:5b4705b1cd5dd35ef408cc4ff9dc0c224270c910ddc4f1ff158615b3ebcd119c"},
+    {file = "oremi_core-1.0.0.dev13-py3-none-any.whl", hash = "sha256:fea100c1e502c9f684a62e15c081f7b1cfb41a01a0e9f0cc5ba0c1b045fcbe99"},
+    {file = "oremi_core-1.0.0.dev13.tar.gz", hash = "sha256:090d61d2a7b9a212a0d8354d79f9e2e80e962ea30eb850220958176d3b48ff5d"},
 ]
 
 [package.dependencies]
