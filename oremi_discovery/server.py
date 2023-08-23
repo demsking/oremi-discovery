@@ -111,8 +111,12 @@ async def listen(
 
   if cert_file:
     import ssl
+
     ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+
     ssl_context.load_cert_chain(cert_file, key_file, password)
+    logger.info(f'Using certificat file "{cert_file}"')
+    logger.info(f'Using key file "{key_file}"')
 
   async with websockets.legacy.server.serve(handler_client, host, port, ssl = ssl_context, server_header = server_header, logger = logger):
     await asyncio.Future()  # run forever
