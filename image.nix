@@ -50,7 +50,6 @@ in
     tag = linuxPkgs.oremi-discovery.version;
     contents = [
       createDockerUser
-      linuxPkgs.curl
 #       linuxPkgs.bashInteractive
 #       linuxPkgs.coreutils
       linuxPkgs.oremi-discovery
@@ -62,9 +61,6 @@ in
       WorkingDir = "/oremi";
       ExposedPorts = {
         "${SERVICE_PORT}/tcp" = {};
-      };
-      Healthcheck = {
-        Test = [ "CMD" "curl -f http://localhost:${SERVICE_PORT} || exit 1" ];
       };
       Labels = {
         package-name = linuxPkgs.oremi-discovery.pname;
