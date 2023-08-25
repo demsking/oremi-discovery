@@ -8,16 +8,8 @@ from oremi_discovery_client import DiscoveryClient, Service
 
 
 def parse_arguments() -> argparse.Namespace:
-  """
-  Parse command-line arguments.
-
-  Returns:
-    argparse.Namespace: The parsed command-line arguments.
-  """
-  # Create the ArgumentParser instance
   parser = argparse.ArgumentParser(prog = 'Discovery Test Client')
 
-  # Define command-line arguments
   parser.add_argument(
     '--host',
     type = str,

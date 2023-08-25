@@ -24,16 +24,18 @@ class Service(BaseModel):
 
   Args:
     name (str): The name of the service.
-    protocol (Literal['http', 'https', 'mqtt', 'ws', 'wss']): The protocol used by the service.
+    protocol (str): The protocol used by the service.
     host (str): The host address of the service.
     port (int): The port number the service is running on.
-    uri (str, optional): The URI of the service. Defaults to None.
+    uri (str, optional): The URI of the service. This.
+    data (dict | None, optional): Additional data associated with the service. Defaults to None.
   """
   name: str
-  protocol: Literal['http', 'https', 'mqtt', 'ws', 'wss']
+  protocol: str
   host: str
   port: int
   uri: str = None # type: ignore
+  data: dict | None = None
 
   @validator('uri', pre = True, always = True)
   def compute_uri(cls, _v, values, **kwargs): # pylint: disable=no-self-argument

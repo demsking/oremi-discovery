@@ -6,6 +6,52 @@
 
 ## Table of Contents
 
+## Install
+
+```sh
+pip install oremi-discovery-client
+```
+
+## Usage
+
+```python
+from oremi.core.logger import Logger
+from oremi_discovery_client import DiscoveryClient, Service
+
+
+async def register_service() -> None:
+    await client.register(service, lambda result: logger.info(f'Subscribing result: {result}'))
+    await asyncio.sleep(1)
+    await client.watch('mqtt', lambda event: logger.info(f'Watching service event: {event}'))
+    await asyncio.sleep(1)
+    await client.unwatch('mqtt', lambda result: logger.info(f'Unwatching result: {result}'))
+    await asyncio.sleep(1)
+    await client.disconnect()
+
+
+service = Service(
+  name = 'mqtt',
+  protocol = 'mqtt',
+  host = 'test.mosquitto.org',
+  port = 1883,
+)
+
+client = DiscoveryClient(
+  uri = 'ws://localhost:5105',
+  user_agent = 'Discovery Client/1.0.0',
+  logger = Logger.create('discovery-client', level = logging.DEBUG),
+  on_connected = register_service,
+)
+
+try:
+  asyncio.run(client.connect())
+except KeyboardInterrupt:
+  pass
+```
+
+Please see [example.py](https://gitlab.com/demsking/oremi-discovery/blob/main/clients/python/example.py)
+for a complete example with SSL.
+
 ## Contribute
 
 Please follow [CONTRIBUTING.md](https://gitlab.com/demsking/oremi-discovery/blob/main/CONTRIBUTING.md).
