@@ -1,11 +1,13 @@
 [tool.poetry]
-name = "oremi-discovery-python"
+name = "oremi-discovery-client"
 version = "1.0.0.dev0"
 description = "Oremi Discovery Client for Python"
 authors = ["Sébastien Demanou <demsking@gmail.com>"]
 license = "Apache-2.0"
 readme = "README.md"
-packages = [{include = "oremi_discovery_python"}]
+packages = [
+  { include = "oremi_discovery_client" },
+]
 
 [[tool.poetry.source]]
 name = "test"

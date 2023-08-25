@@ -7,12 +7,14 @@
   outputs = { self, nixpkgs, flake-utils }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        envDir = "$(pwd)/venv";
+        envDir = "./venv";
         pkgs = import nixpkgs { inherit system; };
       in
       {
         devShell =
           with pkgs; mkShell rec {
+            EDITOR = "vim";
+            PYTHONPATH = "./clients/python:$PYTHONPATH";
             buildInputs = [
               # tmux
               git
@@ -24,10 +26,8 @@
               python310
               python310Packages.pip
               python310Packages.wheel
-              python310Packages.build
               python310Packages.twine
               python310Packages.toml
-              python310Packages.setuptools
               python310Packages.virtualenv
 
               # certificates
@@ -62,8 +62,6 @@
               # Install pre-commit hooks
               pre-commit install -f
             '';
-            EDITOR = "vim";
-            COMPOSE_PROJECT = "oremi";
           };
       });
 }

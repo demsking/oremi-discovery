@@ -4,7 +4,7 @@ import logging
 import ssl
 
 from oremi.core.logger import Logger
-from clients.oremi_discovery_client import DiscoveryClient, Service
+from oremi_discovery_client import DiscoveryClient, Service
 
 
 def parse_arguments() -> argparse.Namespace:

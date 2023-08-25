@@ -4,7 +4,7 @@ IMAGE_NAME := demsking/oremi-discovery
 SSL_PATH := ssl
 SSL_CERT_FILE := $(SSL_PATH)/localhost.pem
 
-.PHONY: all certificates clean dist tests install test image
+.PHONY: all certificates clean dist tests install test image discovery-server-package discovery-client-package publish-discovery-server publish-discovery-client
 
 # Start the development environment using tmuxinator
 env:
@@ -31,11 +31,11 @@ start-ws:
 	poetry run oremi-discovery --verbose --host ::
 
 client-wss: certificates
-	python -m examples.client --port 5106 \
+	python -m clients.python.example --port 5106 \
 	  --cert-file $(SSL_CERT_FILE)
 
 client-ws:
-	python -m examples.client
+	python -m clients.python.example
 
 # Run linting checks on the codebase using pre-commit
 lint:
@@ -68,14 +68,25 @@ clean:
 	rm -rf dist/ ssl/ build/
 
 # Build a distribution of the project using poetry and twine
-dist:
+discovery-server-package:
 	rm -rf dist/
-	poetry build
+	poetry build --no-cache --format=wheel
 	twine check dist/*
 
+discovery-client-package:
+	cd clients/python \
+	  && rm -rf dist/ \
+	  && poetry build --no-cache --format=wheel \
+	  && twine check dist/*
+
+dist: discovery-server-package discovery-client-package
+
 # Publish a distribution of the project to TestPyPI using twine
-publish: dist
+publish-discovery-server: discovery-server-package
 	twine upload -r testpypi dist/*
+
+publish-discovery-client: discovery-client-package
+	twine upload -r testpypi clients/python/dist/*
 
 install:
 	pip install poetry pylint pylint_pydantic
@@ -89,7 +100,7 @@ build/images/$(IMAGE_NAME).tar.gz: image.nix
 
 image: build/images/$(IMAGE_NAME).tar.gz
 
-publish-image:
+publish-image: image
 	git commit . -m "Release $(APP_VERSION)"
 	git tag v$(APP_VERSION)
 	docker push $(IMAGE_NAME):$(APP_VERSION)
