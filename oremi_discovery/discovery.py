@@ -22,7 +22,7 @@ class Discovery(Generic[ServiceKey]):
     self._event_manager = EventManager[str | ServiceKey, EventData]()
 
   async def _del_subscribed_service(self, event: EventData):
-    del self._exposed_services[event.data.name]
+    del self._exposed_services[event.service.name]
 
   async def register_service(self, key: ServiceKey, *, event: ServiceEvent) -> None:
     """
@@ -33,8 +33,8 @@ class Discovery(Generic[ServiceKey]):
       service (Service): The service to be registered.
     """
     self.logger.info(f'Registering {event} from {key}')
-    await self._event_manager.trigger(event.data.name, event)
-    self._exposed_services[event.data.name] = event
+    await self._event_manager.trigger(event.service.name, event)
+    self._exposed_services[event.service.name] = event
 
   async def watch_service(self, key: ServiceKey, *, name: str, on_service_data: OnServiceDataCallback) -> None:
     """

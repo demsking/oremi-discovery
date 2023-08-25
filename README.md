@@ -115,10 +115,10 @@ Registers a service with the Oremi Discovery service.
 
 **Parameters**
 
-| Name      | Type     | Description                                                |
-|-----------|----------|------------------------------------------------------------|
-| `status`  | String   | Status of the service (`"ONLINE"` or `"OFFLINE"`).         |
-| `data`    | Object   | Service data including `name`, `protocol`, `host`, `port`. |
+| Name      | Type     | Description                                                        |
+|-----------|----------|--------------------------------------------------------------------|
+| `status`  | String   | Status of the service (`"ONLINE"` or `"OFFLINE"`).                 |
+| `service` | Object   | Service data including `name`, `protocol`, `host`, `port`, `data`. |
 
 **Example Request**
 
@@ -129,11 +129,14 @@ Registers a service with the Oremi Discovery service.
   "method": "register",
   "params": {
     "status": "ONLINE",
-    "data": {
+    "service": {
       "name": "mqtt",
       "protocol": "mqtt",
       "host": "test.mosquitto.org",
-      "port": 1883
+      "port": 1883,
+      "data": {
+        "optional": "additional data"
+      }
     }
   }
 }
@@ -188,12 +191,15 @@ or an error if subscription fails.
   "jsonrpc": "2.0",
   "result": {
     "status": "ONLINE",
-    "data": {
+    "service": {
       "name": "mqtt",
       "protocol": "mqtt",
       "host": "test.mosquitto.org",
       "port": 1883,
-      "uri": "mqtt://test.mosquitto.org:1883"
+      "uri": "mqtt://test.mosquitto.org:1883",
+      "data": {
+        "optional": "additional data"
+      }
     }
   }
 }

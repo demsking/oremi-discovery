@@ -50,6 +50,9 @@ async def main() -> None:
     protocol = 'mqtt',
     host = 'test.mosquitto.org',
     port = 1883,
+    data = {
+      'env': 'test',
+    },
   )
 
   host = f'{args.host}:{args.port}'

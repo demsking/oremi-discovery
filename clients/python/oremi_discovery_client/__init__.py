@@ -73,13 +73,13 @@ class ServiceEvent(BaseModel):
 
   Args:
     status (Literal['ONLINE', 'OFFLINE']): The status of the service.
-    data (Service): The service associated with the event.
+    service (Service): The service associated with the event.
   """
   status: Literal['ONLINE', 'OFFLINE']
-  data: Service
+  service: Service
 
   def __str__(self) -> str:
-    return f'{self.data}, status = {self.status})'
+    return f'{self.service}, status = {self.status})'
 
 
 class OkResult(BaseModel):
@@ -107,7 +107,7 @@ class DiscoveryClient(WebsocketJsonRpcClient):
     Args:
       service (Service): The service to be registered.
     """
-    event = ServiceEvent(status = 'ONLINE', data = service)
+    event = ServiceEvent(status = 'ONLINE', service = service)
     on_done_wrapper = DiscoveryClient._wrap_ok_done(on_done)
 
     self.logger.info(f'Registering {service}')
