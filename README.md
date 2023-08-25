@@ -26,6 +26,11 @@ systems architecture.
 
 ## Getting Started with Oremi Discovery
 
+The easiest way to use Oremi Discovery is with Docker. Start with Docker for a
+quick setup. Follow these steps:
+
+**Using Docker**
+
 Use the official Docker image `demsking/oremi-discovery`. Open your terminal
 and run:
 
@@ -35,17 +40,33 @@ docker run -d -p 5105:5105 demsking/oremi-discovery
 
 This fetches Oremi Discovery and starts it on port `5105`.
 
-**Oremi Discovery Options**
+**Alternative Installation**
+
+If you prefer installing Oremi Discovery directly:
 
 ```sh
--h, --help            show this help message and exit
---cert-file CERT_FILE
-                      Path to the certificate file for secure connection.
---key-file KEY_FILE   Path to the private key file for secure connection.
---password PASSWORD   Password to unlock the private key (if protected by a password).
---log-file LOG_FILE   Name of the log file.
---verbose             Enable verbose logging.
--v, --version         Show the version of the application.
+pip install oremi-discovery
+```
+
+After installation, start Oremi Discovery using the provided command.
+
+```sh
+usage: oremi-discovery [-h] [--host HOST] [-p PORT] [--cert-file CERT_FILE] [--key-file KEY_FILE] [--password PASSWORD]
+                       [--log-file LOG_FILE] [--verbose] [-v]
+
+A robust WebSocket-powered service discovery solution
+
+options:
+  -h, --help            show this help message and exit
+  --host HOST           Host address to connect to (default: 127.0.0.1).
+  -p PORT, --port PORT  Port number to connect to (default: 5105).
+  --cert-file CERT_FILE
+                        Path to the certificate file for secure connection.
+  --key-file KEY_FILE   Path to the private key file for secure connection.
+  --password PASSWORD   Password to unlock the private key (if protected by a password).
+  --log-file LOG_FILE   Name of the log file.
+  --verbose             Enable verbose logging.
+  -v, --version         Show the version of the application.
 ```
 
 ## Starting the Server with Certificates
