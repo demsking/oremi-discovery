@@ -101,7 +101,6 @@ build/images/$(IMAGE_NAME).tar.gz: image.nix
 image: build/images/$(IMAGE_NAME).tar.gz
 
 publish-image: image
-	git commit . -m "Release $(APP_VERSION)"
 	git tag v$(APP_VERSION)
 	docker push $(IMAGE_NAME):$(APP_VERSION)
 	docker push $(IMAGE_NAME):latest
