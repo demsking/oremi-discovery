@@ -1,7 +1,7 @@
 APP_VERSION := $(shell python oremi_discovery/version.py)
 IMAGE_NAME := demsking/oremi-discovery
 
-SSL_PATH := ssl
+SSL_PATH := ~/.config/oremi/ssl
 SSL_CERT_FILE := $(SSL_PATH)/localhost.pem
 
 .PHONY: all certificates clean dist tests install test image discovery-server-package discovery-client-package publish-discovery-server publish-discovery-client

@@ -13,8 +13,7 @@ let
         pydantic = super.pkgs.python3Packages.callPackage ./packages/pydantic {};
         oremi-core = super.pkgs.python3Packages.callPackage ./packages/oremi-core {};
         pylint-pydantic = super.pkgs.python3Packages.callPackage ./packages/pylint-pydantic {};
-        unqlite = super.unqlite.overridePythonAttrs
-        (
+        unqlite = super.unqlite.overridePythonAttrs (
           old: {
             buildInputs = (old.buildInputs or [ ]) ++ [ super.setuptools ];
           }
