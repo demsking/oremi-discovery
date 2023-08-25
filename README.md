@@ -20,6 +20,7 @@ systems architecture.
   * [`subscribe` Method](#subscribe-method)
   * [`unsubscribe` Method](#unsubscribe-method)
   * [Error Handling](#error-handling)
+- [Clients](#clients)
 - [Contribute](#contribute)
 - [Versioning](#versioning)
 - [License](#license)
@@ -271,6 +272,10 @@ Possible error codes for failed registration or subscription:
 - `1000`: Indicates a normal closure.
 - `1003`: Invalid Message
 - `4000`: Unexpected Error
+
+## Clients
+
+- [Oremi Discovery Client for Python](https://gitlab.com/demsking/oremi-discovery/-/tree/main/clients/python)
 
 ## Contribute
 
