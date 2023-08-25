@@ -1,32 +1,86 @@
+import argparse
 import asyncio
 import logging
+import ssl
+
+from oremi.core.logger import Logger
 from clients.oremi_discovery_client import DiscoveryClient, Service
 
 
-async def register_service():
-  await client.register(service, lambda result: print(f'Subscribing result: {result}'))
-  await asyncio.sleep(1)
-  await client.watch('mqtt', lambda event: print(f'Watching service event: {event}'))
-  await asyncio.sleep(1)
-  await client.unwatch('mqtt', lambda result: print(f'Unwatching result: {result}'))
+def parse_arguments() -> argparse.Namespace:
+  """
+  Parse command-line arguments.
+
+  Returns:
+    argparse.Namespace: The parsed command-line arguments.
+  """
+  # Create the ArgumentParser instance
+  parser = argparse.ArgumentParser(prog = 'Discovery Test Client')
+
+  # Define command-line arguments
+  parser.add_argument(
+    '--host',
+    type = str,
+    default = 'localhost',
+    help = 'Host address to connect to (default: localhost).',
+  )
+
+  parser.add_argument(
+    '-p', '--port',
+    type = int,
+    default = 5105,
+    help = 'Port number to connect to (default: 5105).',
+  )
+
+  parser.add_argument(
+    '--cert-file',
+    type = str,
+    help = 'Path to the certificate file for secure connection.',
+  )
+
+  return parser.parse_args()
 
 
-service = Service(
-  name = 'mqtt',
-  protocol = 'mqtt',
-  host = 'test.mosquitto.org',
-  port = 1883,
-)
+async def main() -> None:
+  async def register_service() -> None:
+    await client.register(service, lambda result: logger.info(f'Subscribing result: {result}'))
+    await asyncio.sleep(1)
+    await client.watch('mqtt', lambda event: logger.info(f'Watching service event: {event}'))
+    await asyncio.sleep(1)
+    await client.unwatch('mqtt', lambda result: logger.info(f'Unwatching result: {result}'))
+    await asyncio.sleep(1)
+    await client.disconnect()
 
-logger = logging.Logger('discovery-client', logging.DEBUG)
-client = DiscoveryClient(
-  uri = 'ws://127.0.0.1:5105',
-  user_agent = 'Discovery Client/1.0.0',
-  logger = logger,
-  on_connected = register_service,
-)
+
+  args = parse_arguments()
+  service = Service(
+    name = 'mqtt',
+    protocol = 'mqtt',
+    host = 'test.mosquitto.org',
+    port = 1883,
+  )
+
+  host = f'{args.host}:{args.port}'
+  logger = Logger.create('discovery-client', level = logging.DEBUG)
+  ssl_context = None
+
+  if args.cert_file:
+    logger.info(f'Using certificat file "{args.cert_file}"')
+    ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+    ssl_context.load_verify_locations(args.cert_file)
+
+  client = DiscoveryClient(
+    uri = f'wss://{host}' if args.cert_file else f'ws://{host}',
+    user_agent = 'Discovery Client/1.0.0',
+    logger = logger,
+    on_connected = register_service,
+    ssl = ssl_context,
+  )
+
+  await client.connect()
+
 
 try:
-  asyncio.run(client.connect())
+  asyncio.run(main())
 except KeyboardInterrupt:
   pass

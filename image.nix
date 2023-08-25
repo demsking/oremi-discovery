@@ -24,6 +24,11 @@ let
   };
   hostPkgs = import <nixpkgs> { overlays = [ overlay ]; };
   linuxPkgs = import <nixpkgs> { overlays = [ overlay ]; system = "x86_64-linux"; };
+  oremi-files = linuxPkgs.runCommand "oremi-files" {} ''
+    mkdir -p $out/oremi
+    cp ${./LICENSE} $out/oremi/LICENSE
+    cp ${./pyproject.toml} $out/oremi/pyproject.toml
+  '';
   createDockerUser = linuxPkgs.runCommand "create-docker-user" {} ''
     mkdir -p $out/etc/pam.d
     echo "root:x:0:0::/root:/bin/sh" > $out/etc/passwd
@@ -45,13 +50,16 @@ in
     tag = linuxPkgs.oremi-discovery.version;
     contents = [
       createDockerUser
+      linuxPkgs.curl
 #       linuxPkgs.bashInteractive
 #       linuxPkgs.coreutils
       linuxPkgs.oremi-discovery
+      oremi-files
     ];
     config = {
       User = DOCKER_USER;
       Env = [];
+      WorkingDir = "/oremi";
       ExposedPorts = {
         "${SERVICE_PORT}/tcp" = {};
       };
@@ -63,7 +71,7 @@ in
         package-version = linuxPkgs.oremi-discovery.version;
         maintainer = "Sébastien Demanou <demsking@gmail.com>";
       };
-      Entrypoint = [ linuxPkgs.oremi-discovery.pname "--host" "0.0.0.0" "--port" SERVICE_PORT ];
+      EntryPoint = [ linuxPkgs.oremi-discovery.pname "--host" "::" "--port" SERVICE_PORT ];
     };
   };
 }

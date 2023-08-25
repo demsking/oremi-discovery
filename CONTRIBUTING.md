@@ -77,7 +77,6 @@ Therefore:
 | start-wss       | Start the test server over SSL.                                        |
 | client          | Start the test client.                                                 |
 | lint            | Run linting checks on the codebase using pre-commit.                   |
-| fix             | Automatically fix any linting issues found by ruff.                    |
 | test            | Run tests using pytest.                                                |
 | coverage        | Generate a coverage report for the codebase using pytest.              |
 | coverage-html   | Generate an HTML coverage report for the codebase using pytest.        |

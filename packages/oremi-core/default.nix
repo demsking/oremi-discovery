@@ -7,14 +7,14 @@
   python310,
 }:
 let
-  version = "1.0.0.dev13";
+  version = "1.0.0.dev15";
 in
 poetry2nix.mkPoetryApplication {
   projectDir = fetchFromGitLab{
     owner = "demsking";
     repo = "oremi-core";
     rev = "v${version}";
-    hash = "sha256-EIpKoiuG2K3aYyYgkz0b1Rm65VmpQPsuDy3pmURSWBE=";
+    hash = "sha256-HVGukC1mk/4dHFOKCEEb9kpRwMQBIiYiJcGc4o/xdfY=";
   };
   python = python310;
   groups = [ ]; # TODO Find how to ignore dev dependencies

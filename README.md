@@ -83,14 +83,25 @@ the `--password` option to provide the password. Here's how to proceed:
    Follow these steps to generate a self-signed certificate using OpenSSL:
 
    ```sh
-   sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-      -keyout /path/to/localhost.key \
-      -out /path/to/localhost.crt
+   # Generate a self-signed certificate
+   openssl req -x509 -nodes -new -sha256 -days 365 -newkey rsa:2048 \
+     -subj "/C=CM/CN=localhost" \
+     -keyout key.pem \
+     -out cert.pem
    ```
 
-   This command generates a private key (key.pem) and a self-signed certificate
-   (cert.pem) that are valid for 365 days. Make sure to enter appropriate
-   details when prompted, such as your organization's name and domain.
+   It's important to note that these certificates are self-signed, which means
+   they are not issued by a recognized Certificate Authority (CA). While
+   suitable for testing and development purposes, self-signed certificates may
+   trigger security warnings in browsers and other client applications.
+
+   Please note that this is a simplified example for generating self-signed
+   certificates for testing purposes. In production environments, it's
+   recommended to obtain SSL certificates from a trusted Certificate
+   Authority (CA) like [Let's Encrypt](https://letsencrypt.org/) to ensure
+   security and proper authentication..
+   Let's Encrypt provides free and automated certificates that are recognized
+   by most browsers and clients.
 
 2. **Start the Server using Docker:**
 
@@ -113,13 +124,6 @@ the `--password` option to provide the password. Here's how to proceed:
 
    This command mounts the certificate and key files into the Docker container
    and starts the server.
-
-> Remember that self-signed certificates are suitable for testing and
-> development purposes.
-> For production deployments, consider obtaining a trusted SSL certificate from
-> a Certificate Authority (CA) like [Let's Encrypt](https://letsencrypt.org/).
-> Let's Encrypt provides free and automated certificates that are recognized by
-> most browsers.
 
 ## JSON-RPC API
 

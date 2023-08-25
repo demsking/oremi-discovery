@@ -16,13 +16,11 @@
 import argparse
 import asyncio
 import logging
-from .server import listen
 
 from oremi.core.logger import Logger
 
-from .vars import APP_DESCRIPTION, APP_NAME, __version__
-from . import listen
-
+from .server import listen
+from .vars import APP_DESCRIPTION, APP_NAME, APP_VERSION
 
 __all__ = ['listen', 'main']
 
@@ -86,7 +84,7 @@ def parse_arguments() -> argparse.Namespace:
   parser.add_argument(
     '-v', '--version',
     action = 'version',
-    version = f'%(prog)s {__version__}',
+    version = f'%(prog)s {APP_VERSION}',
     help = 'Show the version of the application.',
   )
 

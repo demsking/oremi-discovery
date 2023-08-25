@@ -13,16 +13,17 @@
 # limitations under the License.
 # ==============================================================================
 
-from .version import __package_description__, __package_name__, __version__
+from .version import __version__
 
 __all__ = [
   'APP_NAME',
   'APP_ID',
   'APP_DESCRIPTION',
-  '__version__',
+  'APP_VERSION',
 ]
 
-APP_NAME = __package_name__
+APP_NAME = 'oremi-discovery'
 APP_ID = f'sebastien.demanou.{APP_NAME}'
-APP_DESCRIPTION = __package_description__
+APP_DESCRIPTION = 'A robust WebSocket-powered service discovery solution'
 APP_DISPLAY_NAME = 'Oremi Discovery'
+APP_VERSION = __version__

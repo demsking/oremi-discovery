@@ -1,39 +1,45 @@
 APP_VERSION := $(shell python oremi_discovery/version.py)
 IMAGE_NAME := demsking/oremi-discovery
 
-.PHONY: all clean tests install test image
+SSL_PATH := ssl
+SSL_CERT_FILE := $(SSL_PATH)/localhost.pem
+
+.PHONY: all certificates clean dist tests install test image
 
 # Start the development environment using tmuxinator
 env:
 	tmuxinator
 
-ssl/localhost.crt:
+$(SSL_CERT_FILE):
 	mkdir -p $(shell dirname $@)
-	openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-	   -keyout ssl/localhost.pem \
-	   -out $@
+	openssl req -x509 -nodes -new -sha256 -days 1024 -newkey rsa:2048 \
+	  -subj "/C=CM/CN=localhost" \
+	  -keyout $(SSL_PATH)/localhost-key.pem \
+	  -out $(SSL_CERT_FILE)
 
-start-wss: ssl/localhost.crt
+certificates: $(SSL_CERT_FILE)
+
+start-wss: certificates
 	poetry run oremi-discovery \
-	   --verbose \
-	   --host 0.0.0.0 \
-	   --port 5106 \
-	   --cert-file $< \
-	   --key-file ssl/localhost.pem
+	  --verbose \
+	  --host :: \
+	  --port 5106 \
+	  --cert-file $(SSL_CERT_FILE) \
+	  --key-file $(SSL_PATH)/localhost-key.pem
 
 start-ws:
-	poetry run oremi-discovery --verbose --host 0.0.0.0 --port 5105
+	poetry run oremi-discovery --verbose --host ::
 
-client:
+client-wss: certificates
+	python -m examples.client --port 5106 \
+	  --cert-file $(SSL_CERT_FILE)
+
+client-ws:
 	python -m examples.client
 
 # Run linting checks on the codebase using pre-commit
 lint:
 	pre-commit run --all-files
-
-# Automatically fix any linting issues found by ruff
-fix:
-	ruff check . --fix
 
 # Run tests using pytest
 test:
@@ -59,7 +65,7 @@ update:
 
 # Clean up build artifacts and temporary files
 clean:
-	rm -rf dist/
+	rm -rf dist/ ssl/ build/
 
 # Build a distribution of the project using poetry and twine
 dist:
@@ -72,6 +78,7 @@ publish: dist
 	twine upload -r testpypi dist/*
 
 install:
+	pip install poetry pylint pylint_pydantic
 	poetry install
 
 build/images/$(IMAGE_NAME).tar.gz: image.nix

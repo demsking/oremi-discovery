@@ -14,27 +14,34 @@
         devShell =
           with pkgs; mkShell rec {
             buildInputs = [
+              # tmux
               git
-              curl
               tmux
-              ruff
               gitmux
-              which
-              nodejs
-              poetry
-              check-jsonschema
-              gnutar
-              gnumake
-              checkmake
-              pre-commit
               tmuxinator
+
+              # devtools
               python310
               python310Packages.pip
               python310Packages.wheel
               python310Packages.build
               python310Packages.twine
+              python310Packages.toml
               python310Packages.setuptools
               python310Packages.virtualenv
+
+              # certificates
+              openssl
+
+              # pre-commit
+              ruff
+              which
+              nodejs
+              check-jsonschema
+              gnutar
+              gnumake
+              checkmake
+              pre-commit
               python310Packages.pre-commit-hooks
             ];
             shellHook = ''

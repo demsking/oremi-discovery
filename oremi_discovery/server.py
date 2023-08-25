@@ -26,7 +26,7 @@ import websockets.typing
 
 from .discovery import Discovery
 from .models import OkResult, Request, Response, ServiceEvent, ServiceNameParams
-from .vars import APP_DISPLAY_NAME, APP_NAME, __version__
+from .vars import APP_DISPLAY_NAME, APP_NAME, APP_VERSION
 
 __all__ = [
   'listen',
@@ -46,7 +46,7 @@ async def listen(
   logger: logging.Logger,
 ) -> None:
   pool = concurrent.futures.ThreadPoolExecutor(os.cpu_count() or 1)
-  server_header: str = f'{APP_NAME}/{__version__}'
+  server_header: str = f'{APP_NAME}/{APP_VERSION}'
   loop = asyncio.get_running_loop()
   discovery = Discovery[tuple[str, int]](logger)
   ssl_context = None
@@ -106,7 +106,7 @@ async def listen(
       if verbose:
         traceback.print_exc()
 
-  logger.info(f'{APP_DISPLAY_NAME} {__version__}')
+  logger.info(f'{APP_DISPLAY_NAME} {APP_VERSION}')
   logger.info(f'Log level {"INFO" if logger.level == logging.INFO else "DEBUG"}')
 
   if cert_file:
@@ -114,9 +114,12 @@ async def listen(
 
     ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
 
-    ssl_context.load_cert_chain(cert_file, key_file, password)
     logger.info(f'Using certificat file "{cert_file}"')
-    logger.info(f'Using key file "{key_file}"')
+
+    if key_file:
+      logger.info(f'Using key file "{key_file}"')
+
+    ssl_context.load_cert_chain(cert_file, key_file, password)
 
   async with websockets.legacy.server.serve(handler_client, host, port, ssl = ssl_context, server_header = server_header, logger = logger):
     await asyncio.Future()  # run forever
