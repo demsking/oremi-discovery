@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "oremi-discovery"
-version = "1.0.0.dev5"
+version = "1.0.0.dev6"
 description = "A robust WebSocket-powered service discovery solution"
 keywords = ["service", "discovery"]
 authors = ["Sébastien Demanou <demsking@gmail.com>"]
