@@ -35,10 +35,7 @@
   "python.analysis.inlayHints.variableTypes": true,
   "python.analysis.fixAll": ["source.convertImportFormat"],
   "python.testing.pytestEnabled": true,
-  "python.linting.pylintArgs": [
-    "--load-plugins",
-    "pylint_pydantic"
-  ],
+  "python.linting.pylintArgs": [],
   "python.linting.ignorePatterns": [
     "**/site-packages/**/*.py",
     ".vscode/*.py",

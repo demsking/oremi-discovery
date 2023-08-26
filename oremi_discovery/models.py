@@ -15,10 +15,11 @@
 
 from typing import Literal
 
-from pydantic import BaseModel, validator
+from attrs import define, field
 
 
-class Service(BaseModel):
+@define(auto_attribs = True)
+class Service:
   """
   Represents a service with its details.
 
@@ -27,30 +28,18 @@ class Service(BaseModel):
     protocol (str): The protocol used by the service.
     host (str): The host address of the service.
     port (int): The port number the service is running on.
-    uri (str, optional): The URI of the service. This.
+    uri (str): The URI of the service. This.
     data (dict | None, optional): Additional data associated with the service. Defaults to None.
   """
   name: str
   protocol: str
   host: str
   port: int
-  uri: str = None # type: ignore
   data: dict | None = None
 
-  @validator('uri', pre = True, always = True)
-  def compute_uri(cls, _v, values, **kwargs): # pylint: disable=no-self-argument
-    """
-    Compute the URI of the service based on protocol, host, and port.
-
-    Args:
-      _v: The current value of the field.
-      values (dict): The values of the other fields in the model.
-      **kwargs: Additional keyword arguments.
-
-    Returns:
-        str: The computed URI.
-    """
-    return f'{values["protocol"]}://{values["host"]}:{values["port"]}'
+  @property
+  def uri(self): # pylint: disable=no-self-argument
+    return f'{self.protocol}://{self.host}:{self.port}'
 
   def __hash__(self):
     return hash((self.name, self.protocol, self.host, self.port))
@@ -59,7 +48,8 @@ class Service(BaseModel):
     return f'Service(name = {self.name}, uri = {self.uri})'
 
 
-class ServiceEvent(BaseModel):
+@define(auto_attribs = True)
+class ServiceEvent:
   """
   Represents an event related to a service.
 
@@ -74,22 +64,26 @@ class ServiceEvent(BaseModel):
     return f'{self.service}, status = {self.status})'
 
 
-class _RPC(BaseModel):
-  jsonrpc: Literal['2.0'] = '2.0'
-  id: int
-
-
-class ServiceNameParams(BaseModel):
+@define(auto_attribs = True)
+class ServiceNameParams:
   name: str
 
 
-class Request(_RPC, BaseModel):
+@define(auto_attribs = True)
+class Request:
+  id: int
   method: Literal['register', 'subscribe', 'unsubscribe']
   params: ServiceEvent | ServiceNameParams
+  jsonrpc: Literal['2.0'] = field(default = '2.0')
 
 
-class OkResult(BaseModel):
+@define(auto_attribs = True)
+class OkResult:
   ok: bool
 
-class Response(_RPC, BaseModel):
+
+@define(auto_attribs = True)
+class Response:
+  id: int
   result: ServiceEvent | OkResult
+  jsonrpc: Literal['2.0'] = field(default = '2.0')

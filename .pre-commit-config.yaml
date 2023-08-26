@@ -29,10 +29,6 @@ repos:
     hooks:
       - id: pyupgrade
         args: [--py38-plus]
-  - repo: https://github.com/mrtazz/checkmake.git
-    rev: 0.2.2
-    hooks:
-      - id: checkmake
   - repo: local
     hooks:
       - id: gimtoc

@@ -16,8 +16,8 @@
 from collections.abc import Callable
 from typing import Literal
 
+from attrs import asdict, define
 from oremi.core.wsjsonrpc import WebsocketJsonRpcClient
-from pydantic import BaseModel, validator
 
 __all__ = [
   'Service',
@@ -26,7 +26,8 @@ __all__ = [
 ]
 
 
-class Service(BaseModel):
+@define(auto_attribs = True)
+class Service:
   """
   Represents a service with its details.
 
@@ -35,39 +36,28 @@ class Service(BaseModel):
     protocol (str): The protocol used by the service.
     host (str): The host address of the service.
     port (int): The port number the service is running on.
-    uri (str, optional): The URI of the service. This.
+    uri (str): The URI of the service. This.
     data (dict | None, optional): Additional data associated with the service. Defaults to None.
   """
   name: str
   protocol: str
   host: str
   port: int
-  uri: str = None # type: ignore
   data: dict | None = None
 
-  @validator('uri', pre = True, always = True)
-  def compute_uri(cls, _v, values, **kwargs): # pylint: disable=no-self-argument
-    """
-    Compute the URI of the service based on protocol, host, and port.
-
-    Args:
-      _v: The current value of the field.
-      values (dict): The values of the other fields in the model.
-      **kwargs: Additional keyword arguments.
-
-    Returns:
-        str: The computed URI.
-    """
-    return f'{values["protocol"]}://{values["host"]}:{values["port"]}'
+  @property
+  def uri(self): # pylint: disable=no-self-argument
+    return f'{self.protocol}://{self.host}:{self.port}'
 
   def __hash__(self):
     return hash((self.name, self.protocol, self.host, self.port))
 
   def __str__(self) -> str:
-    return f'Service(name: {self.name}, uri: {self.uri}, data: {self.data})'
+    return f'Service(name = {self.name}, uri = {self.uri})'
 
 
-class ServiceEvent(BaseModel):
+@define(auto_attribs = True)
+class ServiceEvent:
   """
   Represents an event related to a service.
 
@@ -82,7 +72,8 @@ class ServiceEvent(BaseModel):
     return f'{self.service}, status = {self.status})'
 
 
-class OkResult(BaseModel):
+@define(auto_attribs = True)
+class OkResult:
   ok: bool
 
 
@@ -95,7 +86,7 @@ class DiscoveryClient(WebsocketJsonRpcClient):
   def _wrap_ok_done(on_done: OkResultCallback | None = None):
     if on_done:
       async def _on_done_wrapper(data: dict):
-        result = OkResult.model_validate(data)
+        result = OkResult(**data)
         on_done(result)
       return _on_done_wrapper
     return None
@@ -111,7 +102,7 @@ class DiscoveryClient(WebsocketJsonRpcClient):
     on_done_wrapper = DiscoveryClient._wrap_ok_done(on_done)
 
     self.logger.info(f'Registering {service}')
-    await self.send_request('register', event.model_dump(), on_response = on_done_wrapper) # type: ignore
+    await self.send_request('register', asdict(event), on_response = on_done_wrapper) # type: ignore
 
   async def watch(self, name: str, on_service_data: OnServiceDataCallback):
     """
@@ -122,7 +113,7 @@ class DiscoveryClient(WebsocketJsonRpcClient):
       on_service_data (OnServiceDataCallback): The callback function for service data changes.
     """
     async def on_service_data_wrapper(data: dict):
-      event = ServiceEvent.model_validate(data)
+      event = ServiceEvent(**data)
       on_service_data(event)
     await self.send_request('subscribe', { 'name': name }, on_response = on_service_data_wrapper)
 

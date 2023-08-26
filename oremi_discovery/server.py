@@ -15,11 +15,12 @@
 
 import asyncio
 import concurrent.futures
+import json
 import logging
 import os
 import traceback
+from attrs import asdict
 
-import pydantic
 import websockets.exceptions
 import websockets.legacy.server
 import websockets.typing
@@ -53,22 +54,23 @@ async def listen(
   verbose = logger.level != logging.INFO
 
   async def process_request(websocket: WebSocketServerProtocol, message: Data) -> None:
-    request = Request.model_validate_json(message)
+    data = json.loads(message)
+    request = Request(**data)
 
     if request.method == 'register':
       if isinstance(request.params, ServiceEvent):
         await discovery.register_service(websocket.remote_address, event = request.params)
-        await websocket.send(Response(id = request.id, result = OkResult(ok = True)).model_dump_json())
+        await websocket.send(json.dumps(asdict(Response(id = request.id, result = OkResult(ok = True)))))
     elif isinstance(request.params, ServiceNameParams):
       if request.method == 'subscribe':
         await discovery.watch_service(
           key = websocket.remote_address,
           name = request.params.name,
-          on_service_data = lambda event: websocket.send(Response(id = request.id, result = event).model_dump_json()),
+          on_service_data = lambda event: websocket.send(json.dumps(asdict(Response(id = request.id, result = event)))),
         )
       elif request.method == 'unsubscribe':
         discovery.unwatch_service(websocket.remote_address, name = request.params.name)
-        await websocket.send(Response(id = request.id, result = OkResult(ok = True)).model_dump_json())
+        await websocket.send(json.dumps(asdict(Response(id = request.id, result = OkResult(ok = True)))))
 
   def handle_connection_close(websocket: WebSocketServerProtocol, exception: websockets.exceptions.ConnectionClosedOK):
     if exception.reason:
@@ -87,7 +89,7 @@ async def listen(
 
       async for message in websocket:
         await loop.run_in_executor(pool, create_process_message_function(websocket, message))
-    except (ValueError, pydantic.ValidationError):
+    except (ValueError, TypeError):
       error_message = 'Invalid Message'
       logger.error(error_message)
       await websocket.close(code = 1003, reason = error_message)

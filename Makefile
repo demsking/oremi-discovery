@@ -1,10 +1,11 @@
-APP_VERSION := $(shell python oremi_discovery/version.py)
-IMAGE_NAME := demsking/oremi-discovery
+APP_NAME := $(shell python metadata.py name)
+APP_VERSION := $(shell python metadata.py version)
+IMAGE_NAME := demsking/$(APP_NAME)
 
 SSL_PATH := ~/.config/oremi/ssl
 SSL_CERT_FILE := $(SSL_PATH)/localhost.pem
 
-.PHONY: all certificates clean dist tests install test image discovery-server-package discovery-client-package publish-discovery-server publish-discovery-client
+.PHONY: all certificates clean dist tests install test image discovery-server-package discovery-client-package publish-discovery-server publish-discovery-client build/requirements.txt
 
 # Start the development environment using tmuxinator
 env:
@@ -23,19 +24,19 @@ start-wss: certificates
 	poetry run oremi-discovery \
 	  --verbose \
 	  --host :: \
-	  --port 5106 \
+	  --port 8106 \
 	  --cert-file $(SSL_CERT_FILE) \
 	  --key-file $(SSL_PATH)/localhost-key.pem
 
 start-ws:
-	poetry run oremi-discovery --verbose --host ::
+	poetry run oremi-discovery --verbose --host :: --port 8105
 
 client-wss: certificates
-	python -m clients.python.example --port 5106 \
+	python -m clients.python.example --port 8106 \
 	  --cert-file $(SSL_CERT_FILE)
 
 client-ws:
-	python -m clients.python.example
+	python -m clients.python.example --port 8105
 
 # Run linting checks on the codebase using pre-commit
 lint:
@@ -89,18 +90,29 @@ publish-discovery-client: discovery-client-package
 	twine upload -r testpypi clients/python/dist/*
 
 install:
-	pip install poetry pylint pylint_pydantic
+	pip install poetry
 	poetry install
 
-build/images/$(IMAGE_NAME).tar.gz: image.nix
-	mkdir -p $(shell dirname $@)
-	nix-build -v -A docker --out-link $@ $<
-	$@ | docker load
+build/requirements.txt:
+	poetry export --only=main --without-hashes -f requirements.txt -o $@
+
+image: build/requirements.txt
+	docker build \
+	  --progress plain . -t $(IMAGE_NAME):$(APP_VERSION) \
+	  --build-arg PACKAGE_NAME="$(APP_NAME)" \
+	  --build-arg CREATED_DATE="$(shell date --rfc-3339=seconds)" \
+	  --build-arg MAINTAINER="$(shell python metadata.py authors)" \
+	  --build-arg DESCRIPTION="$(shell python metadata.py description)" \
+	  --build-arg VERSION="$(APP_VERSION)" \
+	  --build-arg REVISION="$(shell git rev-parse HEAD)" \
+	  --build-arg SOURCE_URL="$(shell python metadata.py repository)" \
+	  --build-arg VENDOR="Oremi" \
+	  --build-arg LICENSE="$(shell python metadata.py license)" \
+
 	docker tag $(IMAGE_NAME):$(APP_VERSION) $(IMAGE_NAME):latest
 
-image: build/images/$(IMAGE_NAME).tar.gz
-
 publish-image: image
+	git commit pyproject.toml -m "Release $(APP_VERSION)"
 	git tag v$(APP_VERSION)
 	docker push $(IMAGE_NAME):$(APP_VERSION)
 	docker push $(IMAGE_NAME):latest

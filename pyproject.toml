@@ -28,7 +28,6 @@ packages = [
 ]
 
 [tool.poetry.scripts]
-poetry = "poetry.console.application:main"
 oremi-discovery = 'oremi_discovery:main'
 
 [tool.poetry.urls]
@@ -44,16 +43,12 @@ secondary = true
 [tool.poetry.dependencies]
 python = ">=3.10,<3.11"
 websockets = "^11.0.3"
-pydantic = "2.0.3"
-oremi-core = "^1.0.0.dev11"
+oremi-core = "^1.0.0.dev15"
+attrs = "^23.1.0"
+toml = "^0.10.2"
 
 [tool.poetry.group.dev.dependencies]
-pyyaml = "^6.0"
-pytest-mock = "^3.10.0"
-pytest = "^7.3.1"
-pytest-cov = "^4.0.0"
-pluggy = "^1.0.0"
-pytest-asyncio = "^0.21.0"
+
 
 [tool.pytest.ini_options]
 # Function starting with the following pattern are considered for test cases.
