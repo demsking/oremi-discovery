@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "oremi-discovery-client"
-version = "1.0.0.dev4"
+version = "1.0.0.dev5"
 description = "Oremi Discovery Client for Python"
 authors = ["Sébastien Demanou <demsking@gmail.com>"]
 license = "Apache-2.0"
