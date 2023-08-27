@@ -44,6 +44,7 @@
             nodejs
             gnutar
             gnumake
+            hadolint
             pre-commit
             check-jsonschema
             python310Packages.pre-commit-hooks

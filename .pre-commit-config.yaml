@@ -31,6 +31,12 @@ repos:
         args: [--py38-plus]
   - repo: local
     hooks:
+      - id: hadolint
+        name: hadolint
+        entry: hadolint
+        language: system
+        files: Dockerfile
+        args: ["Dockerfile"]
       - id: gimtoc
         name: gimtoc
         entry: gimtoc
