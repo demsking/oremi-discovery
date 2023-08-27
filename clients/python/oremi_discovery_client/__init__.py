@@ -53,7 +53,7 @@ class Service:
     return hash((self.name, self.protocol, self.host, self.port))
 
   def __str__(self) -> str:
-    return f'Service(name = {self.name}, uri = {self.uri})'
+    return f'Service(name: {self.name}, uri: {self.uri}, data: {self.data})'
 
 
 @define(auto_attribs = True)
@@ -69,7 +69,7 @@ class ServiceEvent:
   service: Service
 
   def __str__(self) -> str:
-    return f'{self.service}, status = {self.status})'
+    return f'Event(status: {self.status}, service: {self.service})'
 
 
 @define(auto_attribs = True)
