@@ -13,8 +13,7 @@
 # limitations under the License.
 # ==============================================================================
 
-from typing import Literal
-from collections.abc import Callable
+from typing import Callable, Literal, Union
 
 from attrs import asdict, define
 from oremi.core.wsjsonrpc import WebsocketJsonRpcClient
@@ -43,7 +42,7 @@ class Service:
   protocol: str
   host: str
   port: int
-  data: dict | None = None
+  data: Union[dict, None] = None
 
   @property
   def uri(self): # pylint: disable=no-self-argument
@@ -83,7 +82,7 @@ OkResultCallback = Callable[[OkResult], None]
 
 class DiscoveryClient(WebsocketJsonRpcClient):
   @staticmethod
-  def _wrap_ok_done(on_done: OkResultCallback | None = None):
+  def _wrap_ok_done(on_done: Union[OkResultCallback, None] = None):
     if on_done:
       async def _on_done_wrapper(data: dict):
         result = OkResult(**data)
@@ -91,7 +90,7 @@ class DiscoveryClient(WebsocketJsonRpcClient):
       return _on_done_wrapper
     return None
 
-  async def register(self, service: Service, on_done: OkResultCallback | None = None):
+  async def register(self, service: Service, on_done: Union[OkResultCallback, None] = None):
     """
     Register a service and publish an 'ONLINE' event.
 
@@ -117,7 +116,7 @@ class DiscoveryClient(WebsocketJsonRpcClient):
       on_service_data(event)
     await self.send_request('subscribe', { 'name': name }, on_response = on_service_data_wrapper)
 
-  async def unwatch(self, name: str, on_done: OkResultCallback | None = None):
+  async def unwatch(self, name: str, on_done: Union[OkResultCallback, None] = None):
     """
     Watch a specific service for data changes.
 
