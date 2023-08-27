@@ -19,15 +19,15 @@ import json
 import logging
 import os
 import traceback
-from attrs import asdict
 
 import websockets.exceptions
 import websockets.legacy.server
 import websockets.typing
+from attrs import asdict
 
 from .discovery import Discovery
 from .models import OkResult, Request, Response, ServiceEvent, ServiceNameParams
-from .vars import APP_DISPLAY_NAME, APP_NAME, APP_VERSION
+from .package import APP_NAME, APP_VERSION, SERVER_HEADER
 
 __all__ = [
   'listen',
@@ -47,7 +47,6 @@ async def listen(
   logger: logging.Logger,
 ) -> None:
   pool = concurrent.futures.ThreadPoolExecutor(os.cpu_count() or 1)
-  server_header: str = f'{APP_NAME}/{APP_VERSION}'
   loop = asyncio.get_running_loop()
   discovery = Discovery[tuple[str, int]](logger)
   ssl_context = None
@@ -108,7 +107,7 @@ async def listen(
       if verbose:
         traceback.print_exc()
 
-  logger.info(f'{APP_DISPLAY_NAME} {APP_VERSION}')
+  logger.info(f'{APP_NAME} {APP_VERSION}')
   logger.info(f'Log level {"INFO" if logger.level == logging.INFO else "DEBUG"}')
 
   if cert_file:
@@ -123,7 +122,7 @@ async def listen(
 
     ssl_context.load_cert_chain(cert_file, key_file, password)
 
-  async with websockets.legacy.server.serve(handler_client, host, port, ssl = ssl_context, server_header = server_header, logger = logger):
+  async with websockets.legacy.server.serve(handler_client, host, port, ssl = ssl_context, server_header = SERVER_HEADER, logger = logger):
     await asyncio.Future()  # run forever
 
   discovery.terminate()

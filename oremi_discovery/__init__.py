@@ -19,8 +19,8 @@ import logging
 
 from oremi.core.logger import Logger
 
+from .package import APP_DESCRIPTION, APP_NAME, APP_VERSION
 from .server import listen
-from .vars import APP_DESCRIPTION, APP_NAME, APP_VERSION
 
 __all__ = ['listen', 'main']
 

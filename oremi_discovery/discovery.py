@@ -1,8 +1,9 @@
-from collections.abc import Callable, Coroutine
 import logging
+from collections.abc import Callable, Coroutine
 from typing import Generic, TypeVar
 
 from oremi.core.event import EventManager
+
 from .models import ServiceEvent
 
 EventData = ServiceEvent
