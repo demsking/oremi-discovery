@@ -13,9 +13,6 @@ packages = [
   { include = "oremi_discovery_client" },
 ]
 
-[tool.poetry.scripts]
-poetry = "poetry.console.application:main"
-
 [[tool.poetry.source]]
 name = "test"
 url = "https://test.pypi.org/simple/"

@@ -13,8 +13,8 @@
 # limitations under the License.
 # ==============================================================================
 
-from collections.abc import Callable
 from typing import Literal
+from collections.abc import Callable
 
 from attrs import asdict, define
 from oremi.core.wsjsonrpc import WebsocketJsonRpcClient
