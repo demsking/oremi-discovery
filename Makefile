@@ -77,7 +77,7 @@ discovery-server-package:
 discovery-client-package:
 	cd clients/python \
 	  && rm -rf dist/ \
-	  && poetry build --no-cache --format=wheel \
+	  && poetry build --no-cache \
 	  && twine check dist/*
 
 dist: discovery-server-package discovery-client-package
