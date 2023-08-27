@@ -1,7 +1,5 @@
 # Oremi Discovery
 
-[![Build status](https://gitlab.com/demsking/oremi-discovery/badges/main/pipeline.svg)](https://gitlab.com/demsking/oremi-discovery/pipelines)
-[![Test Coverage](https://gitlab.com/demsking/oremi-discovery/badges/main/coverage.svg)](https://gitlab.com/demsking/oremi-discovery/-/jobs)
 [![Buy me a beer](https://img.shields.io/badge/Buy%20me-a%20beer-1f425f.svg)](https://www.buymeacoffee.com/demsking)
 
 A robust WebSocket-powered service discovery solution. Simplify the process of
