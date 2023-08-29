@@ -12,23 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
+from . import main
 
-import os
-
-import toml
-
-__all__ = [
-  'APP_NAME',
-  'APP_DESCRIPTION',
-  'APP_VERSION',
-]
-
-with open(os.path.join(os.path.dirname(__file__), '..', 'pyproject.toml'), encoding = 'utf-8') as file:
-  package = toml.load(file)['tool']['poetry']
-  APP_NAME = package['name']
-  APP_DESCRIPTION = package['description']
-  APP_VERSION = package['version']
-  del package
-  del toml
-
-SERVER_HEADER = f'{APP_NAME}/{APP_VERSION}'
+main()

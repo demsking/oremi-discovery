@@ -85,7 +85,6 @@ Therefore:
 | dist            | Build a distribution of the project using poetry and twine.            |
 | publish         | Publish a distribution of the project to TestPyPI using twine.         |
 
-
 Please see the [Makefile](Makefile) for the full list of targets.
 
 ## Contribute

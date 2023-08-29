@@ -4,8 +4,8 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "oremi-discovery"
-version = "1.0.0.dev7"
-description = "A robust WebSocket-powered service discovery solution"
+version = "1.0.0.dev8"
+description = "A resilient service discovery solution"
 keywords = ["service", "discovery"]
 authors = ["Sébastien Demanou <demsking@gmail.com>"]
 license = "Apache-2.0"
@@ -24,11 +24,11 @@ classifiers = [
 ]
 
 packages = [
-  { include = "oremi_discovery" },
+  { include = "discovery" },
 ]
 
 [tool.poetry.scripts]
-oremi-discovery = 'oremi_discovery:main'
+oremi-discovery = 'discovery:main'
 
 [tool.poetry.urls]
 "Say Thanks!" = "https://www.buymeacoffee.com/demsking"
@@ -43,12 +43,15 @@ secondary = true
 [tool.poetry.dependencies]
 python = ">=3.10,<3.11"
 websockets = "^11.0.3"
-oremi-core = "^1.0.0.dev15"
+oremi-core = "^1.0.0.dev17"
 attrs = "^23.1.0"
 toml = "^0.10.2"
 
 [tool.poetry.group.dev.dependencies]
 
+[tool.skjold]
+sources = ["pyup", "gemnasium", "osv", "pypa"]
+report_only = false # Exit with non-zero exit code on findings.
 
 [tool.pytest.ini_options]
 # Function starting with the following pattern are considered for test cases.

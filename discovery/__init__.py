@@ -12,42 +12,35 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-
 import argparse
 import asyncio
 import logging
 
-from oremi.core.logger import Logger
+from oremi.core.logger import Logger # pylint: disable=import-error
 
-from .package import APP_DESCRIPTION, APP_NAME, APP_VERSION
-from .server import listen
+from .package import APP_DESCRIPTION
+from .package import APP_NAME
+from .package import APP_VERSION
+from .server import Server
 
-__all__ = ['listen', 'main']
+__all__ = ['Server', 'main']
 
 
 def parse_arguments() -> argparse.Namespace:
-  """
-  Parse command-line arguments.
-
-  Returns:
-    argparse.Namespace: The parsed command-line arguments.
-  """
-  # Create the ArgumentParser instance
   parser = argparse.ArgumentParser(prog = APP_NAME, description = APP_DESCRIPTION)
 
-  # Define command-line arguments
   parser.add_argument(
     '--host',
     type = str,
     default = '127.0.0.1',
-    help = 'Host address to connect to (default: 127.0.0.1).',
+    help = 'Host address to listen on (default: 127.0.0.1).',
   )
 
   parser.add_argument(
     '-p', '--port',
     type = int,
     default = 5105,
-    help = 'Port number to connect to (default: 5105).',
+    help = 'Port number to listen on (default: 5105).',
   )
 
   parser.add_argument(
@@ -97,17 +90,20 @@ async def start() -> None:
   log_level = logging.DEBUG if verbose else logging.INFO
   logger = Logger.create(APP_NAME, filename = args.log_file, level = log_level)
 
-  await listen(
-    host = args.host,
-    port = args.port,
+  logger.info(f'Starting {APP_NAME} {APP_VERSION}')
+  logger.info(f'Log level {"DEBUG" if logger.level == logging.DEBUG else "INFO"}')
+
+  server = Server(
+    logger = logger,
     cert_file = args.cert_file,
     key_file = args.key_file,
     password = args.password,
-    logger = logger,
   )
 
+  await server.listen(args.host, args.port)
 
-def main():
+
+def main() -> None:
   try:
     asyncio.run(start())
   except KeyboardInterrupt:

@@ -1,10 +1,10 @@
 import argparse
 import asyncio
 import logging
-import ssl
 
-from oremi.core.logger import Logger
-from oremi_discovery_client import DiscoveryClient, Service
+from discovery_client import DiscoveryClient
+from discovery_client import Service
+from oremi.core.logger import Logger # pylint: disable=import-error
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -60,6 +60,8 @@ async def main() -> None:
   ssl_context = None
 
   if args.cert_file:
+    import ssl  # pylint: disable=import-outside-toplevel
+
     logger.info(f'Using certificat file "{args.cert_file}"')
     ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
     ssl_context.load_verify_locations(args.cert_file)

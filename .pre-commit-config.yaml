@@ -8,7 +8,10 @@ repos:
       - id: check-added-large-files
       - id: check-ast
       - id: check-case-conflict
+      - id: check-docstring-first
+      - id: check-executables-have-shebangs
       - id: check-json
+      - id: check-shebang-scripts-are-executable
       - id: check-merge-conflict
       - id: check-yaml
       - id: check-toml
@@ -16,6 +19,7 @@ repos:
       - id: detect-private-key
       - id: double-quote-string-fixer
       - id: name-tests-test
+      - id: requirements-txt-fixer
   - repo: https://github.com/python-jsonschema/check-jsonschema
     rev: 0.24.1
     hooks:
@@ -24,31 +28,67 @@ repos:
     rev: v0.0.285
     hooks:
       - id: ruff
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v3.10.1
+  - repo: https://github.com/pre-commit/pygrep-hooks
+    rev: v1.10.0
     hooks:
-      - id: pyupgrade
-        args: [--py38-plus]
+      - id: python-check-mock-methods
+      - id: python-no-eval
+      - id: python-no-log-warn
+      - id: python-use-type-annotations
+  - repo: https://github.com/asottile/reorder-python-imports
+    rev: v3.10.0
+    hooks:
+      - id: reorder-python-imports
   - repo: local
     hooks:
+      - id: editorconfig-checker
+        name: 'Check .editorconfig rules'
+        description: '`editorconfig-checker` is a tool to check if your files consider your .editorconfig-rules.'
+        entry: editorconfig-checker
+        language: python
+        types: [ text ]
+        require_serial: true
+      - id: editorconfig-checker-system
+        name: 'Check .editorconfig rules'
+        description: 'Runs system executable of `editorconfig-checker` to lint text files according to `.editorconfig` rules'
+        language: system
+        entry: editorconfig-checker
+        types: [ text ]
+        require_serial: true
       - id: hadolint
         name: hadolint
         entry: hadolint
         language: system
         files: Dockerfile
-        args: ["Dockerfile"]
       - id: gimtoc
         name: gimtoc
         entry: gimtoc
         language: node
         files: README.md
-        args: ["--file", "README.md", "--section", "Table of Contents", "--output", "README.md"]
-      - id: pylint
-        name: pylint
-        entry: pylint
-        language: python
-        files: '\.py$'
-        args:
-          - "-rn" # Only display messages
-          - "--errors-only"
-          - "--ignore-paths=tests,.vscode,.gitlab"
+        args: [--file, README.md, --section, Table of Contents, --output, README.md]
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.5
+    hooks:
+      - id: bandit
+  - repo: https://github.com/PyCQA/doc8
+    rev: v1.1.1
+    hooks:
+      - id: doc8
+  - repo: https://github.com/PyCQA/prospector
+    rev: v1.9.0
+    hooks:
+      - id: prospector
+  - repo: https://github.com/iamthefij/docker-pre-commit
+    rev: v3.0.1
+    hooks:
+      - id: docker-compose-check
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.10.1
+    hooks:
+      - id: pyupgrade
+        args: [--py38-plus]
+  - repo: https://github.com/twu/skjold
+    rev: v0.6.1
+    hooks:
+      - id: skjold
+        # args: [pyproject.toml]

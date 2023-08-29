@@ -1,8 +1,10 @@
 import logging
-from collections.abc import Callable, Coroutine
-from typing import Generic, TypeVar
+from collections.abc import Callable
+from collections.abc import Coroutine
+from typing import Generic
+from typing import TypeVar
 
-from oremi.core.event import EventManager
+from oremi.core.event import EventManager # pylint: disable=import-error
 
 from .models import ServiceEvent
 
@@ -46,7 +48,7 @@ class Discovery(Generic[ServiceKey]):
       name (str): The name of the service to watch.
       on_service_data (OnServiceDataCallback): The callback function for service data changes.
     """
-    self.logger.info(f'Watching service {name} from {key}')
+    self.logger.info(f'Watching service "{name}" from {key}')
 
     watcher_key: tuple[ServiceKey, str] = (key, name)
 
@@ -72,7 +74,7 @@ class Discovery(Generic[ServiceKey]):
     if watcher_key in self._watched_services:
       existing_on_service_data = self._watched_services[watcher_key]
 
-      self.logger.info(f'Unwatching service {name} from {key}')
+      self.logger.info(f'Unwatching service "{name}" from {key}')
       self._event_manager.unsubscribe(name, existing_on_service_data)
 
       del self._watched_services[watcher_key]

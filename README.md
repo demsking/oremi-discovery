@@ -2,23 +2,20 @@
 
 [![Buy me a beer](https://img.shields.io/badge/Buy%20me-a%20beer-1f425f.svg)](https://www.buymeacoffee.com/demsking)
 
-A robust WebSocket-powered service discovery solution. Simplify the process of
-discovering and connecting to network services dynamically.
-
-With Oremi Discovery, effortlessly locate and interact with services across
-your network, enhancing scalability and flexibility in your distributed
-systems architecture.
+A resilient service discovery solution powered by WebSocket. Simplify the
+process of identifying and dynamically connecting to network services.
+Additionally, services can seamlessly share data.
 
 ## Table of Contents
 
 - [Getting Started with Oremi Discovery](#getting-started-with-oremi-discovery)
 - [Starting the Server with Certificates](#starting-the-server-with-certificates)
-- [JSON-RPC API](#json-rpc-api)
+- [Oremi Discovery JSON-RPC API](#oremi-discovery-json-rpc-api)
   * [`register` Method](#register-method)
   * [`subscribe` Method](#subscribe-method)
   * [`unsubscribe` Method](#unsubscribe-method)
   * [Error Handling](#error-handling)
-- [Clients](#clients)
+- [Oremi Discovery Clients](#oremi-discovery-clients)
 - [Contribute](#contribute)
 - [Versioning](#versioning)
 - [License](#license)
@@ -53,12 +50,12 @@ After installation, start Oremi Discovery using the provided command.
 usage: oremi-discovery [-h] [--host HOST] [-p PORT] [--cert-file CERT_FILE] [--key-file KEY_FILE] [--password PASSWORD]
                        [--log-file LOG_FILE] [--verbose] [-v]
 
-A robust WebSocket-powered service discovery solution
+A resilient service discovery solution
 
 options:
   -h, --help            show this help message and exit
-  --host HOST           Host address to connect to (default: 127.0.0.1).
-  -p PORT, --port PORT  Port number to connect to (default: 5105).
+  --host HOST           Host address to listen on (default: 127.0.0.1).
+  -p PORT, --port PORT  Port number to listen on (default: 5105).
   --cert-file CERT_FILE
                         Path to the certificate file for secure connection.
   --key-file KEY_FILE   Path to the private key file for secure connection.
@@ -124,7 +121,7 @@ the `--password` option to provide the password. Here's how to proceed:
    This command mounts the certificate and key files into the Docker container
    and starts the server.
 
-## JSON-RPC API
+## Oremi Discovery JSON-RPC API
 
 Oremi Discovery supports JSON-RPC requests and responses for both registering,
 subscribing and unsubscribing to services.
@@ -271,7 +268,7 @@ Possible error codes for failed registration or subscription:
 - `1003`: Invalid Message
 - `4000`: Unexpected Error
 
-## Clients
+## Oremi Discovery Clients
 
 - [Oremi Discovery Client for Python](https://gitlab.com/demsking/oremi-discovery/-/tree/main/clients/python)
 

@@ -12,13 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-
+from typing import Any
 from typing import Literal
 
-from attrs import define, field
+from attrs import define
+from attrs import field
 
 
-@define(auto_attribs = True)
+@define
 class Service:
   """
   Represents a service with its details.
@@ -38,17 +39,17 @@ class Service:
   data: dict | None = None
 
   @property
-  def uri(self): # pylint: disable=no-self-argument
+  def uri(self) -> str:
     return f'{self.protocol}://{self.host}:{self.port}'
 
-  def __hash__(self):
+  def __hash__(self) -> int:
     return hash((self.name, self.protocol, self.host, self.port))
 
   def __str__(self) -> str:
-    return f'Service(name = {self.name}, uri = {self.uri})'
+    return f'Service(name: {self.name}, uri: {self.uri}, data: {self.data})'
 
 
-@define(auto_attribs = True)
+@define
 class ServiceEvent:
   """
   Represents an event related to a service.
@@ -58,31 +59,31 @@ class ServiceEvent:
     service (Service): The service associated with the event.
   """
   status: Literal['ONLINE', 'OFFLINE']
-  service: Service
+  service: Service = field(converter = lambda kwargs: Service(**kwargs))
 
   def __str__(self) -> str:
-    return f'{self.service}, status = {self.status})'
+    return f'Event(status: {self.status}, service: {self.service})'
 
 
-@define(auto_attribs = True)
+@define
 class ServiceNameParams:
   name: str
 
 
-@define(auto_attribs = True)
+@define
 class Request:
   id: int
   method: Literal['register', 'subscribe', 'unsubscribe']
-  params: ServiceEvent | ServiceNameParams
+  params: dict[str, Any]
   jsonrpc: Literal['2.0'] = field(default = '2.0')
 
 
-@define(auto_attribs = True)
+@define
 class OkResult:
   ok: bool
 
 
-@define(auto_attribs = True)
+@define
 class Response:
   id: int
   result: ServiceEvent | OkResult

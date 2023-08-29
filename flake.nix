@@ -13,7 +13,8 @@
       {
         devShell = with pkgs; mkShell rec {
           EDITOR = "vim";
-          PYTHONPATH = "./clients/python:$PYTHONPATH";
+          PYTHONPATH = ".:./clients/python:$PYTHONPATH";
+          COMPOSE_PROJECT = "oremi-discovery";
           buildInputs = [
             # tmux
             git
@@ -22,6 +23,7 @@
             tmuxinator
 
             # devtools
+            poetry
             python310
             python310Packages.pip
             python310Packages.wheel
@@ -42,14 +44,25 @@
             ruff
             which
             nodejs
+            hadolint
+            check-jsonschema
             gnutar
             gnumake
-            hadolint
+            bandit
+            skjold
+            shellcheck
+            prospector
             pre-commit
-            check-jsonschema
+            editorconfig-checker
+            python310Packages.doc8
+            python310Packages.pyroma
             python310Packages.pre-commit-hooks
+            python310Packages.openapi-spec-validator
+            python310Packages.reorder-python-imports
           ];
           shellHook = ''
+            export SERVICE_HOST="$(hostname -I | awk '{print $1}')"
+
             # Python
             virtualenv `basename ${envDir}`
             VIRTUAL_ENV_DISABLE_PROMPT=true source ${envDir}/bin/activate

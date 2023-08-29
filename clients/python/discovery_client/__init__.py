@@ -12,11 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
+from typing import Callable
+from typing import Literal
+from typing import Union
 
-from typing import Callable, Literal, Union
-
-from attrs import asdict, define
-from oremi.core.wsjsonrpc import WebsocketJsonRpcClient
+from attrs import asdict
+from attrs import define
+from oremi.core.wsjsonrpc import WebsocketJsonRpcClient # pylint: disable=import-error
 
 __all__ = [
   'Service',
@@ -45,10 +47,10 @@ class Service:
   data: Union[dict, None] = None
 
   @property
-  def uri(self): # pylint: disable=no-self-argument
+  def uri(self) -> str:
     return f'{self.protocol}://{self.host}:{self.port}'
 
-  def __hash__(self):
+  def __hash__(self) -> int:
     return hash((self.name, self.protocol, self.host, self.port))
 
   def __str__(self) -> str:
@@ -111,7 +113,7 @@ class DiscoveryClient(WebsocketJsonRpcClient):
       name (str): The name of the service to watch.
       on_service_data (OnServiceDataCallback): The callback function for service data changes.
     """
-    async def on_service_data_wrapper(data: dict):
+    async def on_service_data_wrapper(data: dict) -> None:
       event = ServiceEvent(**data)
       on_service_data(event)
     await self.send_request('subscribe', { 'name': name }, on_response = on_service_data_wrapper)

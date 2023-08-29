@@ -1,4 +1,5 @@
 import sys
+
 import toml
 
 with open('pyproject.toml', encoding = 'utf-8') as toml_file:

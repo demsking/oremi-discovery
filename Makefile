@@ -2,7 +2,7 @@ APP_NAME := $(shell python metadata.py name)
 APP_VERSION := $(shell python metadata.py version)
 IMAGE_NAME := demsking/$(APP_NAME)
 
-SSL_PATH := ~/.config/oremi/ssl
+SSL_PATH := ~/build/oremi/ssl
 SSL_CERT_FILE := $(SSL_PATH)/localhost.pem
 
 .PHONY: all certificates clean dist tests install test image discovery-server-package discovery-client-package publish-discovery-server publish-discovery-client build/requirements.txt
@@ -23,13 +23,13 @@ certificates: $(SSL_CERT_FILE)
 start-wss: certificates
 	poetry run oremi-discovery \
 	  --verbose \
-	  --host :: \
+	  --host localhost \
 	  --port 8106 \
 	  --cert-file $(SSL_CERT_FILE) \
 	  --key-file $(SSL_PATH)/localhost-key.pem
 
 start-ws:
-	poetry run oremi-discovery --verbose --host :: --port 8105
+	poetry run oremi-discovery --verbose --host localhost --port 8105
 
 client-wss: certificates
 	python -m clients.python.example --port 8106 \
@@ -37,6 +37,9 @@ client-wss: certificates
 
 client-ws:
 	python -m clients.python.example --port 8105
+
+help:
+	poetry run oremi-discovery --help
 
 # Run linting checks on the codebase using pre-commit
 lint:
@@ -90,7 +93,6 @@ publish-discovery-client: discovery-client-package
 	twine upload -r testpypi clients/python/dist/*
 
 install:
-	pip install poetry
 	poetry install
 
 build/requirements.txt:
@@ -103,12 +105,11 @@ image: build/requirements.txt
 	  --build-arg CREATED_DATE="$(shell date --rfc-3339=seconds)" \
 	  --build-arg MAINTAINER="$(shell python metadata.py authors)" \
 	  --build-arg DESCRIPTION="$(shell python metadata.py description)" \
+	  --build-arg DOCUMENTATION="$(shell python metadata.py documentation)" \
 	  --build-arg VERSION="$(APP_VERSION)" \
 	  --build-arg REVISION="$(shell git rev-parse HEAD)" \
 	  --build-arg SOURCE_URL="$(shell python metadata.py repository)" \
-	  --build-arg VENDOR="Oremi" \
-	  --build-arg LICENSE="$(shell python metadata.py license)" \
-
+	  --build-arg LICENSE="$(shell python metadata.py license)"
 	docker tag $(IMAGE_NAME):$(APP_VERSION) $(IMAGE_NAME):latest
 
 publish-image: image
