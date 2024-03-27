@@ -14,7 +14,6 @@
         devShell = with pkgs; mkShell rec {
           EDITOR = "vim";
           PYTHONPATH = ".:./clients/python:$PYTHONPATH";
-          COMPOSE_PROJECT = "oremi-discovery";
           buildInputs = [
             # tmux
             git
@@ -23,19 +22,23 @@
             tmuxinator
 
             # devtools
+            dart
             poetry
             python310
             python310Packages.pip
             python310Packages.wheel
             python310Packages.twine
             python310Packages.pylint
+            python310Packages.virtualenv
+            python310Packages.toml
+
+            # tests
             python310Packages.pytest-mock
             python310Packages.pytest
             python310Packages.pytest-cov
             python310Packages.pluggy
             python310Packages.pytest-asyncio
-            python310Packages.virtualenv
-            python310Packages.toml
+            nodePackages.nodemon
 
             # certificates
             openssl
@@ -57,11 +60,13 @@
             python310Packages.doc8
             python310Packages.pyroma
             python310Packages.pre-commit-hooks
-            python310Packages.openapi-spec-validator
             python310Packages.reorder-python-imports
           ];
           shellHook = ''
             export SERVICE_HOST="$(hostname -I | awk '{print $1}')"
+
+            # Disable Dart analytics
+            dart --disable-analytics > /dev/null
 
             # Python
             virtualenv `basename ${envDir}`

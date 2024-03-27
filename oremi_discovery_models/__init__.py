@@ -18,6 +18,15 @@ from typing import Literal
 from attrs import define
 from attrs import field
 
+__all__ = [
+  'Service',
+  'ServiceEvent',
+  'ServiceNameParams',
+  'Request',
+  'OkResult',
+  'Response',
+]
+
 
 @define
 class Service:
@@ -59,7 +68,7 @@ class ServiceEvent:
     service (Service): The service associated with the event.
   """
   status: Literal['ONLINE', 'OFFLINE']
-  service: Service = field(converter = lambda kwargs: Service(**kwargs))
+  service: Service = field(converter = lambda kwargs: Service(**kwargs) if isinstance(kwargs, dict) else kwargs)
 
   def __str__(self) -> str:
     return f'Event(status: {self.status}, service: {self.service})'

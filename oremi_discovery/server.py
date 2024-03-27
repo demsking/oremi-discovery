@@ -21,24 +21,25 @@ import websockets.exceptions # pylint: disable=import-error
 import websockets.legacy.server as Websockets # pylint: disable=import-error
 import websockets.typing # pylint: disable=import-error
 from attrs import asdict
+from oremi_core.wsserver import WebsocketServer
 
 from .discovery import Discovery
-from .models import OkResult
-from .models import Request
-from .models import Response
-from .models import ServiceEvent
-from .models import ServiceNameParams
 from .package import SERVER_HEADER
+from oremi_discovery_models import OkResult
+from oremi_discovery_models import Request
+from oremi_discovery_models import Response
+from oremi_discovery_models import ServiceEvent
+from oremi_discovery_models import ServiceNameParams
 
 __all__ = [
-  'Server',
+  'DiscoveryServer',
 ]
 
 WebSocketServerProtocol = Websockets.WebSocketServerProtocol
 Data = websockets.typing.Data
 
 
-class Server:
+class DiscoveryServer(WebsocketServer):
   def __init__(
     self,
     *,

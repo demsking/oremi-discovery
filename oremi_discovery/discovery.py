@@ -4,9 +4,9 @@ from collections.abc import Coroutine
 from typing import Generic
 from typing import TypeVar
 
-from oremi.core.event import EventManager # pylint: disable=import-error
+from oremi_core.event import EventManager # pylint: disable=import-error
 
-from .models import ServiceEvent
+from oremi_discovery_models import ServiceEvent
 
 EventData = ServiceEvent
 ServiceKey = TypeVar('ServiceKey')

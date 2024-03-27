@@ -11,7 +11,7 @@ pip install oremi-discovery-client
 ## Usage
 
 ```python
-from oremi.core.logger import Logger
+from oremi_core.logger import Logger
 from oremi_discovery_client import DiscoveryClient, Service
 
 

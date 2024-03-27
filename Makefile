@@ -2,7 +2,7 @@ APP_NAME := $(shell python metadata.py name)
 APP_VERSION := $(shell python metadata.py version)
 IMAGE_NAME := demsking/$(APP_NAME)
 
-SSL_PATH := ~/build/oremi/ssl
+SSL_PATH := ./build/ssl
 SSL_CERT_FILE := $(SSL_PATH)/localhost.pem
 
 .PHONY: all certificates clean dist tests install test image discovery-server-package discovery-client-package publish-discovery-server publish-discovery-client build/requirements.txt
@@ -20,7 +20,7 @@ $(SSL_CERT_FILE):
 
 certificates: $(SSL_CERT_FILE)
 
-start-wss: certificates
+server-wss: certificates
 	poetry run oremi-discovery \
 	  --verbose \
 	  --host localhost \
@@ -28,26 +28,63 @@ start-wss: certificates
 	  --cert-file $(SSL_CERT_FILE) \
 	  --key-file $(SSL_PATH)/localhost-key.pem
 
-start-ws:
-	poetry run oremi-discovery --verbose --host localhost --port 8105
+server-ws:
+	poetry run oremi-discovery \
+	  --verbose \
+	  --host localhost \
+	  --port 8107
 
-client-wss: certificates
-	python -m clients.python.example --port 8106 \
+client-python-ws:
+	python -m clients.python.example --port 8107
+
+client-python-wss: certificates
+	python -m clients.python.example \
+	  --port 8106 \
 	  --cert-file $(SSL_CERT_FILE)
 
-client-ws:
-	python -m clients.python.example --port 8105
+client-dart-ws:
+	dart run clients/dart/example/main.dart --port 8107
 
-help:
+client-dart-wss: certificates
+	dart run clients/dart/example/main.dart \
+	  --port 8106 \
+	  --cert-file $(SSL_CERT_FILE)
+
+help-server:
 	poetry run oremi-discovery --help
+
+help-cli:
+	poetry -C clients/python run oremi-discovery-cli --help
 
 # Run linting checks on the codebase using pre-commit
 lint:
+	cd clients/dart && dart fix --dry-run
 	pre-commit run --all-files
 
-# Run tests using pytest
-test:
+# Automatically fix any linting issues found by ruff
+fix:
+	ruff check . --fix
+	cd clients/dart && dart fix
+
+test-dart:
+	cd dart && clients/dart test \
+	  --chain-stack-traces \
+	  --platform vm \
+	  --coverage ../../coverage/dart
+
+test-python:
 	pytest
+
+test: test-dart test-python
+
+watch-test-dart:
+	nodemon -e dart -w dart -x 'make test-dart'
+
+watch-test-python:
+	nodemon -e oremi -w dart -x 'make test-python'
+
+watch-test:
+	$(MAKE) -j2 watch-test-dart watch-test-python
 
 # Generate a coverage report for the codebase using pytest
 coverage:
@@ -60,16 +97,18 @@ coverage-html:
 # Show outdated dependencies using poetry
 outdated:
 	poetry show --outdated
+	poetry show -C clients/dart --outdated
 
 # Update dev env
 update:
 	poetry update
+	dart pub -C clients/dart/ upgrade
 	nix flake update
 	pre-commit autoupdate
 
 # Clean up build artifacts and temporary files
 clean:
-	rm -rf dist/ ssl/ build/
+	rm -rf dist/ build/ clients/python/dist/
 
 # Build a distribution of the project using poetry and twine
 discovery-server-package:

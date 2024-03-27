@@ -28,10 +28,11 @@ RUN addgroup -g 1000 oremi \
   && pip install --no-cache-dir --upgrade pip
 
 COPY pyproject.toml LICENSE build/requirements.txt /oremi/
-COPY discovery /oremi/discovery
+COPY oremi_discovery_models /oremi/oremi_discovery_models
+COPY oremi_discovery /oremi/discovery
 
 USER oremi
 ENV PATH="/home/oremi/.local/bin:$PATH"
 ENV PYTHONPATH="/oremi:$PYTHONPATH"
 RUN pip install --no-cache-dir -r /oremi/requirements.txt
-ENTRYPOINT ["python", "-m", "discovery", "--host", "0.0.0.0", "--port", "5105"]
+ENTRYPOINT ["python", "/oremi/discovery", "--host", "0.0.0.0", "--port", "5105"]

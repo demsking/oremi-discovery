@@ -29,5 +29,3 @@ with open(os.path.join(os.path.dirname(__file__), '..', 'pyproject.toml'), encod
   APP_VERSION = package['version']
   del package
   del toml
-
-SERVER_HEADER = f'{APP_NAME}/{APP_VERSION}'

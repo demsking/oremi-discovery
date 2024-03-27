@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "oremi-discovery"
-version = "1.0.0.dev8"
+version = "1.0.0.dev9"
 description = "A resilient service discovery solution"
 keywords = ["service", "discovery"]
 authors = ["Sébastien Demanou <demsking@gmail.com>"]
@@ -24,11 +24,12 @@ classifiers = [
 ]
 
 packages = [
-  { include = "discovery" },
+  { include = "oremi_discovery" },
+  { include = "oremi_discovery_models" },
 ]
 
 [tool.poetry.scripts]
-oremi-discovery = 'discovery:main'
+oremi-discovery = 'oremi_discovery:main'
 
 [tool.poetry.urls]
 "Say Thanks!" = "https://www.buymeacoffee.com/demsking"
@@ -43,19 +44,22 @@ secondary = true
 [tool.poetry.dependencies]
 python = ">=3.10,<3.11"
 websockets = "^11.0.3"
-oremi-core = "^1.0.0.dev17"
+oremi-core = "^1.0.0.dev18"
 attrs = "^23.1.0"
 toml = "^0.10.2"
 
 [tool.poetry.group.dev.dependencies]
 
+[tool.pytest.ini_options]
+# Function starting with the following pattern are considered for test cases.
+python_functions = "test_"
+
 [tool.skjold]
 sources = ["pyup", "gemnasium", "osv", "pypa"]
 report_only = false # Exit with non-zero exit code on findings.
 
-[tool.pytest.ini_options]
-# Function starting with the following pattern are considered for test cases.
-python_functions = "test_"
+[tool.bandit]
+exclude_dirs = ["tests"]
 
 [tool.ruff]
 fix = true
@@ -63,7 +67,7 @@ target-version = "py310"
 
 # Only enable rules that have safe autofixes;
 # only enable rules that are relevant to stubs
-select = [
+lint.select = [
   "F401",   # Remove unused imports
   "UP004",  # Remove explicit `object` inheritance
   "UP006",  # PEP-585 autofixes
@@ -82,7 +86,7 @@ select = [
   "PYI032",  # use `object`, not `Any`, as the second parameter to `__eq__`
 ]
 
-ignore = [
+lint.ignore = [
   "E501",   # ignore line too long
   "D100",   # ignore missing docstrings in public module
   "D104",   # ignore missing docstrings in public package
@@ -90,11 +94,9 @@ ignore = [
   "RUF005", # admittedly an optimization of code rather than a fail
 ]
 
-line-length = 128
-
-[tool.ruff.flake8-quotes]
+[tool.ruff.lint.flake8-quotes]
 docstring-quotes = "single"
 inline-quotes = "single"
 
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "google"

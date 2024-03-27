@@ -13,69 +13,20 @@
 # limitations under the License.
 # ==============================================================================
 from typing import Callable
-from typing import Literal
 from typing import Union
 
 from attrs import asdict
-from attrs import define
-from oremi.core.wsjsonrpc import WebsocketJsonRpcClient # pylint: disable=import-error
+from oremi_core.wsjsonrpc import WebsocketJsonRpcClient # pylint: disable=import-error
+
+from oremi_discovery_models import OkResult
+from oremi_discovery_models import Service
+from oremi_discovery_models import ServiceEvent
 
 __all__ = [
   'Service',
   'ServiceEvent',
   'DiscoveryClient',
 ]
-
-
-@define(auto_attribs = True)
-class Service:
-  """
-  Represents a service with its details.
-
-  Args:
-    name (str): The name of the service.
-    protocol (str): The protocol used by the service.
-    host (str): The host address of the service.
-    port (int): The port number the service is running on.
-    uri (str): The URI of the service. This.
-    data (dict | None, optional): Additional data associated with the service. Defaults to None.
-  """
-  name: str
-  protocol: str
-  host: str
-  port: int
-  data: Union[dict, None] = None
-
-  @property
-  def uri(self) -> str:
-    return f'{self.protocol}://{self.host}:{self.port}'
-
-  def __hash__(self) -> int:
-    return hash((self.name, self.protocol, self.host, self.port))
-
-  def __str__(self) -> str:
-    return f'Service(name: {self.name}, uri: {self.uri}, data: {self.data})'
-
-
-@define(auto_attribs = True)
-class ServiceEvent:
-  """
-  Represents an event related to a service.
-
-  Args:
-    status (Literal['ONLINE', 'OFFLINE']): The status of the service.
-    service (Service): The service associated with the event.
-  """
-  status: Literal['ONLINE', 'OFFLINE']
-  service: Service
-
-  def __str__(self) -> str:
-    return f'Event(status: {self.status}, service: {self.service})'
-
-
-@define(auto_attribs = True)
-class OkResult:
-  ok: bool
 
 
 OnServiceDataCallback = Callable[[ServiceEvent], None]
@@ -92,17 +43,16 @@ class DiscoveryClient(WebsocketJsonRpcClient):
       return _on_done_wrapper
     return None
 
-  async def register(self, service: Service, on_done: Union[OkResultCallback, None] = None):
+  async def publish(self, event: ServiceEvent, on_done: Union[OkResultCallback, None] = None):
     """
-    Register a service and publish an 'ONLINE' event.
+    Publish a service event.
 
     Args:
-      service (Service): The service to be registered.
+      event (ServiceEvent): The service event to publish.
     """
-    event = ServiceEvent(status = 'ONLINE', service = service)
     on_done_wrapper = DiscoveryClient._wrap_ok_done(on_done)
 
-    self.logger.info(f'Registering {service}')
+    self.logger.info(f'Publishing {event}')
     await self.send_request('register', asdict(event), on_response = on_done_wrapper) # type: ignore
 
   async def watch(self, name: str, on_service_data: OnServiceDataCallback):
