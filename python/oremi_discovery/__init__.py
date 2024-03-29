@@ -69,7 +69,7 @@ class DiscoveryService:
 
   def stop(self) -> None:
     self.logger.info(f'Stopping discovery service {self.client_id}...')
-    for service in self.subscribed_services:
+    for service in list(self.subscribed_services):
       self.unpublish(service)
     self.client.loop_stop()
     self.client.disconnect()
