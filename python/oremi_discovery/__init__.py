@@ -17,6 +17,7 @@ import logging
 import uuid
 from collections.abc import Callable
 from dataclasses import dataclass
+from dataclasses import field
 
 import paho.mqtt.client as mqtt
 from dataclasses_json import dataclass_json
@@ -27,6 +28,10 @@ class Service:
   name: str
   host: str
   port: int
+  data: dict = field(default_factory=dict)
+
+  def __hash__(self) -> int:
+    return hash((self.name, self.host, self.port))
 
 @dataclass_json
 @dataclass(kw_only=True)
@@ -46,7 +51,7 @@ class DiscoveryService:
     self.topic_prefix = topic_prefix
     self.logger = logger
     self.subscriptions: dict[str, Callable[[Subscription], None]] = {}
-    self.subscribed_services: list[Service] = []
+    self.subscribed_services: set[Service] = set()
 
     self.client.on_connect = self._on_connect
     self.client.on_disconnect = self._on_disconnect
@@ -83,7 +88,7 @@ class DiscoveryService:
 
     self.client.publish(topic, payload=payload, qos=1, retain=False, properties=properties)
     self.logger.info(f"Published service announcement to topic '{topic}'")
-    self.subscribed_services.append(service)
+    self.subscribed_services.add(service)
 
   def unpublish(self, service: Service) -> None:
     if not self.connected:
@@ -98,6 +103,9 @@ class DiscoveryService:
 
     self.client.publish(topic, payload=payload, qos=1, retain=False, properties=properties)
     self.logger.info(f"Published service unavailability to topic '{topic}'")
+
+    if service in self.subscribed_services:
+      self.subscribed_services.remove(service)
 
   def watch(self, service_name: str, callback: Callable[[Subscription], None], qos: int = 0) -> None:
     if not self.connected:
@@ -114,12 +122,13 @@ class DiscoveryService:
       self.logger.info(f'Connected to {self.client.host}:{self.client.port}')
       self.logger.info(f'Listening subscriptions {self.topic_prefix}/#')
       self.connected = True
+
+      for service in self.subscribed_services:
+        self.publish(service)
     else:
       self.logger.error(f'Connection to {self.client.host}:{self.client.port} failed: {mqtt.connack_string(reason_code)}.')
 
   def _on_disconnect(self, client, userdata, flags, reason_code, properties) -> None:
-    for service in self.subscribed_services:
-      self.unpublish(service)
     self.subscribed_services.clear()
     self.logger.info(f'Disconnected from {self.client.host}:{self.client.port} - {reason_code}')
     self.connected = False

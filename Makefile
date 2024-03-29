@@ -21,17 +21,13 @@ update:
 server:
 	poetry run oremi-discovery
 
+.PHONY: python
 python:
 	python -m python.example
 
-dart-ws:
+.PHONY: dart
+dart:
 	dart run dart/example/main.dart --port 8107
-
-help-server:
-	poetry run oremi-discovery --help
-
-help-cli:
-	poetry -C python run oremi-discovery-cli --help
 
 # Run linting checks on the codebase using pre-commit
 lint:

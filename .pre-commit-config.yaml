@@ -56,6 +56,6 @@ repos:
     hooks:
       - id: run-pytest
         name: Run Pytest
-        entry: python -m pytest
+        entry: make test-python
         language: system
         types: [python]
