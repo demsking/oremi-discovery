@@ -86,5 +86,5 @@ discovery-package:
 packages: discovery-package
 
 # Publish a distribution of the project to TestPyPI using twine
-publish-discovery-client: discovery-package
+publish: discovery-package
 	twine upload -r testpypi python/dist/*
