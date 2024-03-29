@@ -1,5 +1,5 @@
 import 'package:oremi_core/oremi_core.dart';
-import 'package:oremi_discovery_client/src/models.dart';
+import 'package:oremi_discovery/src/models.dart';
 
 typedef OnServiceDataCallback = void Function(ServiceEvent);
 typedef OkResultCallback = void Function(OkResult);

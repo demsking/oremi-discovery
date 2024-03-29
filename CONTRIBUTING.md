@@ -70,24 +70,6 @@ Therefore:
 
 ## Makefile targets
 
-| Target             | Description                                                     |
-|--------------------|-----------------------------------------------------------------|
-| env                | Start the development environment using tmuxinator.             |
-| server-ws          | Start the test server.                                          |
-| server-wss         | Start the test server over SSL.                                 |
-| client-python-ws   | Start the Python test client.                                   |
-| client-python-wss  | Start the Python test client over SSL.                          |
-| client-dart-ws     | Start the Dart test client.                                     |
-| client-dart-wss    | Start the Dart test client over SSL.                            |
-| lint               | Run linting checks on the codebase using pre-commit.            |
-| test               | Run tests using pytest.                                         |
-| coverage           | Generate a coverage report for the codebase using pytest.       |
-| coverage-html      | Generate an HTML coverage report for the codebase using pytest. |
-| outdated           | Show outdated dependencies using poetry.                        |
-| clean              | Clean up build artifacts and temporary files.                   |
-| dist               | Build a distribution of the project using poetry and twine.     |
-| publish            | Publish a distribution of the project to TestPyPI using twine.  |
-
 Please see the [Makefile](Makefile) for the full list of targets.
 
 ## Contribute

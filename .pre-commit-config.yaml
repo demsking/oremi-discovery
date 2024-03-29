@@ -41,13 +41,6 @@ repos:
       - id: reorder-python-imports
   - repo: local
     hooks:
-      - id: editorconfig-checker
-        name: 'Check .editorconfig rules'
-        description: '`editorconfig-checker` is a tool to check if your files consider your .editorconfig-rules.'
-        entry: editorconfig-checker
-        language: python
-        types: [ text ]
-        require_serial: true
       - id: editorconfig-checker-system
         name: 'Check .editorconfig rules'
         description: 'Runs system executable of `editorconfig-checker` to lint text files according to `.editorconfig` rules'
@@ -55,17 +48,6 @@ repos:
         entry: editorconfig-checker
         types: [ text ]
         require_serial: true
-      - id: hadolint
-        name: hadolint
-        entry: hadolint
-        language: system
-        files: Dockerfile
-      - id: gimtoc
-        name: gimtoc
-        entry: gimtoc
-        language: node
-        files: README.md
-        args: [--file, README.md, --section, Table of Contents, --output, README.md]
   - repo: https://github.com/PyCQA/bandit
     rev: 1.7.8
     hooks:
@@ -78,10 +60,6 @@ repos:
   #   rev: v1.10.3
   #   hooks:
   #     - id: prospector
-  - repo: https://github.com/iamthefij/docker-pre-commit
-    rev: v3.0.1
-    hooks:
-      - id: docker-compose-check
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.15.2
     hooks:

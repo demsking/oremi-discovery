@@ -1,4 +1,4 @@
-import 'package:oremi_discovery_client/oremi_discovery_client.dart';
+import 'package:oremi_discovery/oremi_discovery.dart';
 import 'package:test/test.dart';
 
 void main() {

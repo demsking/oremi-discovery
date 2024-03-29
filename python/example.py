@@ -1,9 +1,9 @@
 import asyncio
 import logging
 
-from oremi_discovery_client import DiscoveryService
-from oremi_discovery_client import Service
-from oremi_discovery_client import Subscription
+from oremi_discovery import DiscoveryService
+from oremi_discovery import Service
+from oremi_discovery import Subscription
 
 # Example usage:
 async def main():

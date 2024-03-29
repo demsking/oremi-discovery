@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:args/args.dart';
-import 'package:oremi_discovery_client/src/discovery.dart';
-import 'package:oremi_discovery_client/src/models.dart';
+import 'package:oremi_discovery/src/discovery.dart';
+import 'package:oremi_discovery/src/models.dart';
 
 Future<void> main(List<String> args) async {
   final completer = Completer<void>();

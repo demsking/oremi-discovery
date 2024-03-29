@@ -5,14 +5,14 @@
 ## Install
 
 ```sh
-pip install oremi-discovery-client
+pip install oremi-discovery
 ```
 
 ## Usage
 
 ```python
 from oremi_core.logger import Logger
-from oremi_discovery_client import DiscoveryClient, Service
+from oremi_discovery import DiscoveryClient, Service
 
 
 async def register_service() -> None:
@@ -45,7 +45,7 @@ except KeyboardInterrupt:
   pass
 ```
 
-Please see [example.py](https://gitlab.com/demsking/oremi-discovery/blob/main/clients/python/example.py)
+Please see [example.py](https://gitlab.com/demsking/oremi-discovery/blob/main/python/example.py)
 for a complete example with SSL.
 
 ## Contribute

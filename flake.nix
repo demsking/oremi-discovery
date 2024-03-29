@@ -13,7 +13,7 @@
       {
         devShell = with pkgs; mkShell rec {
           EDITOR = "vim";
-          PYTHONPATH = ".:./clients/python:$PYTHONPATH";
+          PYTHONPATH = ".:./python:$PYTHONPATH";
           buildInputs = [
             # tmux
             git
@@ -25,12 +25,10 @@
             dart
             poetry
             python310
-            python310Packages.pip
             python310Packages.wheel
             python310Packages.twine
             python310Packages.pylint
             python310Packages.virtualenv
-            python310Packages.toml
 
             # tests
             python310Packages.pytest-mock
@@ -45,11 +43,7 @@
 
             # pre-commit
             ruff
-            which
-            nodejs
-            hadolint
             check-jsonschema
-            gnutar
             gnumake
             bandit
             skjold
@@ -71,16 +65,6 @@
             # Python
             virtualenv `basename ${envDir}`
             VIRTUAL_ENV_DISABLE_PROMPT=true source ${envDir}/bin/activate
-
-            # Node.js
-            mkdir -p .nix-node
-            export NODE_PATH=$PWD/.nix-node
-            export PATH=$NODE_PATH/bin:$PATH
-            npm config set prefix $NODE_PATH
-
-            if ! which gimtoc &> /dev/null; then
-              npm install -g gimtoc
-            fi
 
             # Install pre-commit hooks
             pre-commit install -f

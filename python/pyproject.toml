@@ -3,18 +3,15 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-name = "oremi-discovery-client"
-version = "1.0.0.dev9"
+name = "oremi-discovery"
+version = "1.0.0.beta0"
 description = "Oremi Discovery Client"
 authors = ["Sébastien Demanou <demsking@gmail.com>"]
 license = "Apache-2.0"
 readme = "README.md"
 packages = [
-  { include = "oremi_discovery_client" },
+  { include = "oremi_discovery" },
 ]
-
-[tool.poetry.scripts]
-oremi-discovery-cli = 'oremi_discovery_client.cli:main'
 
 [[tool.poetry.source]]
 name = "test"
@@ -41,14 +38,10 @@ select = [
   "UP014",  # Class-based syntax for NamedTuples
   "UP019",  # Use str over typing.Text
   "UP035",  # import from typing, not typing_extensions, wherever possible
-  "UP039",  # don't use parens after a class definition with no bases
   "PYI009",  # use `...`, not `pass`, in empty class bodies
   "PYI010",  # function bodies must be empty
   "PYI012",  # class bodies must not contain `pass`
-  "PYI013",  # non-empty class bodies must not contain `...`
   "PYI020",  # quoted annotations are always unnecessary in stubs
-  "PYI025",  # always alias `collections.abc.Set` as `AbstractSet` when importing it
-  "PYI032",  # use `object`, not `Any`, as the second parameter to `__eq__`
 ]
 
 ignore = [

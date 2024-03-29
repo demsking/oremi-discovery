@@ -1,43 +1,53 @@
-APP_NAME := $(shell python metadata.py name)
-APP_VERSION := $(shell python metadata.py version)
-IMAGE_NAME := demsking/$(APP_NAME)
-
-.PHONY: all certificates clean dist tests install test image discovery-server-package discovery-client-package publish-discovery-server publish-discovery-client build/requirements.txt
+.PHONY: all certificates clean dist tests install test discovery-package publish-discovery
 
 # Start the development environment using tmuxinator
 env:
 	tmuxinator
 
+install:
+	poetry -C python install
+	dart pub -C dart update
+
+outdated:
+	poetry -C python show --outdated
+	dart pub -C dart outdated
+
+update:
+	poetry update
+	dart pub -C dart/ upgrade
+	nix flake update
+	pre-commit autoupdate
+
 server:
 	poetry run oremi-discovery
 
-client-python:
-	python -m clients.python.example
+python:
+	python -m python.example
 
-client-dart-ws:
-	dart run clients/dart/example/main.dart --port 8107
+dart-ws:
+	dart run dart/example/main.dart --port 8107
 
 help-server:
 	poetry run oremi-discovery --help
 
 help-cli:
-	poetry -C clients/python run oremi-discovery-cli --help
+	poetry -C python run oremi-discovery-cli --help
 
 # Run linting checks on the codebase using pre-commit
 lint:
-	cd clients/dart && dart fix --dry-run
+	cd dart && dart fix --dry-run
 	pre-commit run --all-files
 
 # Automatically fix any linting issues found by ruff
 fix:
 	ruff check . --fix
-	cd clients/dart && dart fix
+	cd dart && dart fix --apply
 
 test-dart:
-	cd dart && clients/dart test \
+	cd dart && dart test \
 	  --chain-stack-traces \
 	  --platform vm \
-	  --coverage ../../coverage/dart
+	  --coverage ../coverage/dart
 
 test-python:
 	pytest
@@ -48,79 +58,32 @@ watch-test-dart:
 	nodemon -w dart -e dart -x 'make test-dart'
 
 watch-test-python:
-	nodemon -w oremi_discovery -e py -x 'make test-python'
+	nodemon -w python -e py -x 'make test-python'
 
 watch-test:
 	$(MAKE) -j2 watch-test-dart watch-test-python
 
 # Generate a coverage report for the codebase using pytest
 coverage:
-	pytest --cov=oremi_discovery
+	pytest --cov=python
 
 # Generate an HTML coverage report for the codebase using pytest
 coverage-html:
-	pytest --cov=oremi_discovery --cov-report=html
-
-# Show outdated dependencies using poetry
-outdated:
-	poetry show --outdated
-	poetry show -C clients/dart --outdated
-
-# Update dev env
-update:
-	poetry update
-	dart pub -C clients/dart/ upgrade
-	nix flake update
-	pre-commit autoupdate
+	pytest --cov=python --cov-report=html
 
 # Clean up build artifacts and temporary files
 clean:
-	rm -rf dist/ build/ clients/python/dist/
+	rm -rf **/dist **/__pycache__ .ruff_cache .pytest_cache **/.ruff_cache **/.pytest_cache
 
 # Build a distribution of the project using poetry and twine
-discovery-server-package:
-	rm -rf dist/
-	poetry build --no-cache --format=wheel
-	twine check dist/*
-
-discovery-client-package:
-	cd clients/python \
+discovery-package:
+	cd python \
 	  && rm -rf dist/ \
 	  && poetry build --no-cache \
 	  && twine check dist/*
 
-dist: discovery-server-package discovery-client-package
+dist: discovery-package
 
 # Publish a distribution of the project to TestPyPI using twine
-publish-discovery-server: discovery-server-package
-	twine upload -r testpypi dist/*
-
-publish-discovery-client: discovery-client-package
-	twine upload -r testpypi clients/python/dist/*
-
-install:
-	poetry install
-
-build/requirements.txt:
-	poetry export --only=main --without-hashes -f requirements.txt -o $@
-
-image: build/requirements.txt
-	docker build \
-	  --progress plain . -t $(IMAGE_NAME):$(APP_VERSION) \
-	  --build-arg PACKAGE_NAME="$(APP_NAME)" \
-	  --build-arg CREATED_DATE="$(shell date --rfc-3339=seconds)" \
-	  --build-arg MAINTAINER="$(shell python metadata.py authors)" \
-	  --build-arg DESCRIPTION="$(shell python metadata.py description)" \
-	  --build-arg DOCUMENTATION="$(shell python metadata.py documentation)" \
-	  --build-arg VERSION="$(APP_VERSION)" \
-	  --build-arg REVISION="$(shell git rev-parse HEAD)" \
-	  --build-arg SOURCE_URL="$(shell python metadata.py repository)" \
-	  --build-arg LICENSE="$(shell python metadata.py license)"
-	docker tag $(IMAGE_NAME):$(APP_VERSION) $(IMAGE_NAME):latest
-
-publish-image: image
-	git commit pyproject.toml -m "Release $(APP_VERSION)"
-	git tag v$(APP_VERSION)
-	docker push $(IMAGE_NAME):$(APP_VERSION)
-	docker push $(IMAGE_NAME):latest
-	git push --tags origin main
+publish-discovery-client: discovery-package
+	twine upload -r testpypi python/dist/*
