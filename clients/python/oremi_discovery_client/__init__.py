@@ -12,70 +12,119 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-from typing import Callable
-from typing import Union
+import asyncio
+import logging
+import uuid
+from collections.abc import Callable
+from dataclasses import dataclass
 
-from attrs import asdict
-from oremi_core.wsjsonrpc import WebsocketJsonRpcClient # pylint: disable=import-error
+import paho.mqtt.client as mqtt
+from dataclasses_json import dataclass_json
 
-from oremi_discovery_models import OkResult
-from oremi_discovery_models import Service
-from oremi_discovery_models import ServiceEvent
+@dataclass_json
+@dataclass(kw_only=True)
+class Service:
+  name: str
+  host: str
+  port: int
 
-__all__ = [
-  'Service',
-  'ServiceEvent',
-  'DiscoveryClient',
-]
+@dataclass_json
+@dataclass(kw_only=True)
+class Subscription:
+  service: Service
+  available: bool = False
 
+class DiscoveryService:
+  def __init__(self, *, client_id: str | None = None, topic_prefix: str = 'discovery', logger: logging.Logger):
+    self.client_id = client_id or str(uuid.uuid4())
+    self.client = mqtt.Client(
+      callback_api_version=mqtt.CallbackAPIVersion.VERSION2,
+      client_id=self.client_id,
+      protocol=mqtt.MQTTv5,
+    )
 
-OnServiceDataCallback = Callable[[ServiceEvent], None]
-OkResultCallback = Callable[[OkResult], None]
+    self.topic_prefix = topic_prefix
+    self.logger = logger
+    self.subscriptions: dict[str, Callable[[Subscription], None]] = {}
+    self.subscribed_services: list[Service] = []
 
+    self.client.on_connect = self._on_connect
+    self.client.on_disconnect = self._on_disconnect
+    self.connected = False
 
-class DiscoveryClient(WebsocketJsonRpcClient):
-  @staticmethod
-  def _wrap_ok_done(on_done: Union[OkResultCallback, None] = None):
-    if on_done:
-      async def _on_done_wrapper(data: dict):
-        result = OkResult(**data)
-        on_done(result)
-      return _on_done_wrapper
-    return None
+  async def start(self, broker_address: str, port: int = 1883) -> None:
+    self.logger.info(f'Connecting to {broker_address}:{port}')
+    self.client.connect_async(broker_address, port, clean_start=True)
+    self.client.loop_start()
 
-  async def publish(self, event: ServiceEvent, on_done: Union[OkResultCallback, None] = None):
-    """
-    Publish a service event.
+    await asyncio.sleep(1)  # Allow some time for connection establishment
+    while not self.connected:
+      await asyncio.sleep(0.1)  # Check connection status periodically
+    self.connected = True
 
-    Args:
-      event (ServiceEvent): The service event to publish.
-    """
-    on_done_wrapper = DiscoveryClient._wrap_ok_done(on_done)
+  def stop(self) -> None:
+    self.logger.info('Stopping DiscoveryService...')
+    for service in self.subscribed_services:
+      self.publish_unavailable(service)
+    self.client.loop_stop()
+    self.client.disconnect()
+    self.logger.info('DiscoveryService stopped.')
 
-    self.logger.info(f'Publishing {event}')
-    await self.send_request('register', asdict(event), on_response = on_done_wrapper) # type: ignore
+  def publish(self, service: Service) -> None:
+    if not self.connected:
+      raise RuntimeError('Client is not connected.')
 
-  async def watch(self, name: str, on_service_data: OnServiceDataCallback):
-    """
-    Watch a specific service for data changes.
+    topic = f'{self.topic_prefix}/{service.name}'
+    subscription = Subscription(service=service, available=True)
+    payload = subscription.to_json().encode('utf-8')
 
-    Args:
-      name (str): The name of the service to watch.
-      on_service_data (OnServiceDataCallback): The callback function for service data changes.
-    """
-    async def on_service_data_wrapper(data: dict) -> None:
-      event = ServiceEvent(**data)
-      on_service_data(event)
-    await self.send_request('subscribe', { 'name': name }, on_response = on_service_data_wrapper)
+    properties = mqtt.Properties(mqtt.PacketTypes.PUBLISH)
+    properties.UserProperty = ('client_id', self.client_id)
 
-  async def unwatch(self, name: str, on_done: Union[OkResultCallback, None] = None):
-    """
-    Watch a specific service for data changes.
+    self.client.publish(topic, payload=payload, qos=1, retain=False, properties=properties)
+    self.logger.info(f"Published service announcement to topic '{topic}'")
+    self.subscribed_services.append(service)
 
-    Args:
-      name (str): The name of the service to watch.
-      on_done (OkResultCallback | None): The callback function.
-    """
-    on_done_wrapper = DiscoveryClient._wrap_ok_done(on_done)
+  def publish_unavailable(self, service: Service) -> None:
+    if not self.connected:
+      raise RuntimeError('Client is not connected.')
 
-    await self.send_request('unsubscribe', { 'name': name }, on_response = on_done_wrapper) # type: ignore
+    topic = f'{self.topic_prefix}/{service.name}'
+    subscription = Subscription(service=service, available=False)
+    payload = subscription.to_json().encode('utf-8')
+
+    properties = mqtt.Properties(mqtt.PacketTypes.PUBLISH)
+    properties.UserProperty = ('client_id', self.client_id)
+
+    self.client.publish(topic, payload=payload, qos=1, retain=False, properties=properties)
+    self.logger.info(f"Published service unavailability to topic '{topic}'")
+
+  def watch(self, service_name: str, callback: Callable[[Subscription], None], qos: int = 0) -> None:
+    if not self.connected:
+      raise RuntimeError('Client is not connected.')
+
+    topic = f'{self.topic_prefix}/{service_name}'
+    self.client.subscribe(topic, qos=qos)
+    self.subscriptions[service_name] = callback
+    self.client.message_callback_add(topic, self._on_service_availability_message)
+    self.logger.info(f"Subscribed to service availability topic '{topic}'")
+
+  def _on_connect(self, client, userdata, flags, reason_code, properties) -> None:
+    if reason_code == mqtt.CONNACK_ACCEPTED:
+      self.logger.info(f'Connected to {self.client.host}:{self.client.port}')
+      self.logger.info(f'Listening subscriptions {self.topic_prefix}/#')
+      self.connected = True
+    else:
+      self.logger.error(f'Connection to {self.client.host}:{self.client.port} failed: {mqtt.connack_string(reason_code)}.')
+
+  def _on_disconnect(self, client, userdata, flags, reason_code, properties) -> None:
+    for service in self.subscribed_services:
+      self.publish_unavailable(service)
+    self.subscribed_services.clear()
+    self.logger.info(f'Disconnected from {self.client.host}:{self.client.port} - {reason_code}')
+    self.connected = False
+
+  def _on_service_availability_message(self, client, userdata, msg: mqtt.MQTTMessage) -> None:
+    subscription = Subscription.from_json(msg.payload)
+    notify = self.subscriptions.get(subscription.service.name, (None, None))
+    notify(subscription)

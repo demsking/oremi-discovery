@@ -11,7 +11,6 @@ license = "Apache-2.0"
 readme = "README.md"
 packages = [
   { include = "oremi_discovery_client" },
-  { include = "oremi_discovery_models" },
 ]
 
 [tool.poetry.scripts]
@@ -23,13 +22,13 @@ url = "https://test.pypi.org/simple/"
 secondary = true
 
 [tool.poetry.dependencies]
-python = ">=3.8"
-oremi-core = "^1.0.0.dev18"
-attrs = "^23.1.0"
+python = ">=3.10,<3.11"
+dataclasses-json = "^0.6.4"
+paho-mqtt = "^2.0.0"
 
 [tool.ruff]
 fix = true
-target-version = "py38"
+target-version = "py310"
 
 # Only enable rules that have safe autofixes;
 # only enable rules that are relevant to stubs

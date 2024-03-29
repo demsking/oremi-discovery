@@ -16,11 +16,7 @@
       "type": "python",
       "request": "launch",
       "module": "discovery",
-      "args": [
-        "--verbose",
-        "--host", "0.0.0.0",
-        "--port", "8105"
-      ],
+      "args": [],
       "cwd": "${workspaceFolder}",
       "justMyCode": false
     }

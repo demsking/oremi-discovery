@@ -2,53 +2,20 @@ APP_NAME := $(shell python metadata.py name)
 APP_VERSION := $(shell python metadata.py version)
 IMAGE_NAME := demsking/$(APP_NAME)
 
-SSL_PATH := ./build/ssl
-SSL_CERT_FILE := $(SSL_PATH)/localhost.pem
-
 .PHONY: all certificates clean dist tests install test image discovery-server-package discovery-client-package publish-discovery-server publish-discovery-client build/requirements.txt
 
 # Start the development environment using tmuxinator
 env:
 	tmuxinator
 
-$(SSL_CERT_FILE):
-	mkdir -p $(shell dirname $@)
-	openssl req -x509 -nodes -new -sha256 -days 1024 -newkey rsa:2048 \
-	  -subj "/C=CM/CN=localhost" \
-	  -keyout $(SSL_PATH)/localhost-key.pem \
-	  -out $(SSL_CERT_FILE)
+server:
+	poetry run oremi-discovery
 
-certificates: $(SSL_CERT_FILE)
-
-server-wss: certificates
-	poetry run oremi-discovery \
-	  --verbose \
-	  --host localhost \
-	  --port 8106 \
-	  --cert-file $(SSL_CERT_FILE) \
-	  --key-file $(SSL_PATH)/localhost-key.pem
-
-server-ws:
-	poetry run oremi-discovery \
-	  --verbose \
-	  --host localhost \
-	  --port 8107
-
-client-python-ws:
-	python -m clients.python.example --port 8107
-
-client-python-wss: certificates
-	python -m clients.python.example \
-	  --port 8106 \
-	  --cert-file $(SSL_CERT_FILE)
+client-python:
+	python -m clients.python.example
 
 client-dart-ws:
 	dart run clients/dart/example/main.dart --port 8107
-
-client-dart-wss: certificates
-	dart run clients/dart/example/main.dart \
-	  --port 8106 \
-	  --cert-file $(SSL_CERT_FILE)
 
 help-server:
 	poetry run oremi-discovery --help
@@ -78,21 +45,21 @@ test-python:
 test: test-dart test-python
 
 watch-test-dart:
-	nodemon -e dart -w dart -x 'make test-dart'
+	nodemon -w dart -e dart -x 'make test-dart'
 
 watch-test-python:
-	nodemon -e oremi -w dart -x 'make test-python'
+	nodemon -w oremi_discovery -e py -x 'make test-python'
 
 watch-test:
 	$(MAKE) -j2 watch-test-dart watch-test-python
 
 # Generate a coverage report for the codebase using pytest
 coverage:
-	pytest --cov=oremi
+	pytest --cov=oremi_discovery
 
 # Generate an HTML coverage report for the codebase using pytest
 coverage-html:
-	pytest --cov=oremi --cov-report=html
+	pytest --cov=oremi_discovery --cov-report=html
 
 # Show outdated dependencies using poetry
 outdated:

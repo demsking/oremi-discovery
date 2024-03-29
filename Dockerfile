@@ -28,7 +28,6 @@ RUN addgroup -g 1000 oremi \
   && pip install --no-cache-dir --upgrade pip
 
 COPY pyproject.toml LICENSE build/requirements.txt /oremi/
-COPY oremi_discovery_models /oremi/oremi_discovery_models
 COPY oremi_discovery /oremi/discovery
 
 USER oremi

@@ -1,4 +1,4 @@
-# Copyright 2023 Sébastien Demanou. All Rights Reserved.
+# Copyright 2024 Sébastien Demanou. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,38 +14,50 @@
 # ==============================================================================
 import asyncio
 import logging
-
-from oremi_core.logger import Logger
+import signal
 
 from .args import parse_arguments # pylint: disable=import-error
-from .package import APP_NAME
-from .package import APP_VERSION
-from .server import DiscoveryServer
+from .config import APP_NAME
+from .config import APP_VERSION
+from .manager import SubscriptionManager
 
-__all__ = ['DiscoveryServer', 'main']
+__all__ = ['start', 'main']
 
 
 async def start() -> None:
+  loop = asyncio.get_event_loop()
   args = parse_arguments()
-  verbose: bool = args.verbose
-  log_level = logging.DEBUG if verbose else logging.INFO
-  logger = Logger.create(APP_NAME, filename = args.log_file, level = log_level)
+
+  # Set up logging
+  logger = logging.getLogger(APP_NAME)
+  logger.setLevel(logging.INFO)
+  ch = logging.StreamHandler()
+  formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+  ch.setFormatter(formatter)
+  logger.addHandler(ch)
+
+  # Set up manager
+  manager = SubscriptionManager(client_id=args.client_id, logger=logger)
+
+  def shutdown():
+    logger.info(f'Shutting down {APP_NAME} {APP_VERSION}')
+    manager.stop()
+    for task in asyncio.all_tasks():
+      task.cancel()
+
+  # Wait until a signal is received
+  for signame in [signal.SIGINT, signal.SIGTERM]:
+    loop.add_signal_handler(signame, lambda signame=signame: shutdown())
 
   logger.info(f'Starting {APP_NAME} {APP_VERSION}')
-  logger.info(f'Log level {"DEBUG" if logger.level == logging.DEBUG else "INFO"}')
+  manager.start(args.host, args.port)
 
-  server = DiscoveryServer(
-    logger = logger,
-    cert_file = args.cert_file,
-    key_file = args.key_file,
-    password = args.password,
-  )
-
-  await server.listen(args.host, args.port)
+  # Keep the main coroutine running until SIGINT or SIGTERM is received
+  await asyncio.Future()
 
 
 def main() -> None:
   try:
     asyncio.run(start())
-  except KeyboardInterrupt:
+  except (KeyboardInterrupt, asyncio.exceptions.CancelledError):
     pass

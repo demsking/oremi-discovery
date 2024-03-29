@@ -25,7 +25,6 @@ classifiers = [
 
 packages = [
   { include = "oremi_discovery" },
-  { include = "oremi_discovery_models" },
 ]
 
 [tool.poetry.scripts]
@@ -43,12 +42,9 @@ secondary = true
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.11"
-websockets = "^11.0.3"
-oremi-core = "^1.0.0.dev18"
-attrs = "^23.1.0"
 toml = "^0.10.2"
-
-[tool.poetry.group.dev.dependencies]
+dataclasses-json = "^0.6.4"
+paho-mqtt = "^2.0.0"
 
 [tool.pytest.ini_options]
 # Function starting with the following pattern are considered for test cases.
