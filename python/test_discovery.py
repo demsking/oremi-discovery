@@ -50,12 +50,12 @@ def test_publish(discovery_service):
   # Add assertions as necessary
 
 # Define a test case for publishing unavailability
-def test_publish_unavailable(discovery_service):
+def test_unpublish(discovery_service):
   with pytest.raises(RuntimeError):
-      discovery_service.publish_unavailable(Service(name='test', host='localhost', port=1234))
+      discovery_service.unpublish(Service(name='test', host='localhost', port=1234))
   asyncio.run(discovery_service.start('test.mosquitto.org', 1883))
   time.sleep(1)  # Let it connect
-  discovery_service.publish_unavailable(Service(name='test', host='localhost', port=1234))
+  discovery_service.unpublish(Service(name='test', host='localhost', port=1234))
   # Add assertions as necessary
 
 # Define a test case for watching service availability

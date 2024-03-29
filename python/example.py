@@ -47,7 +47,7 @@ async def main():
   discovery.publish(service2)
 
   await asyncio.sleep(2)
-  discovery.publish_unavailable(service1)
+  discovery.unpublish(service1)
 
   # Keep the script running for a while to observe service availability notifications
   input('Press Enter to stop...\n')

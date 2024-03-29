@@ -52,7 +52,7 @@ test-dart:
 test-python:
 	pytest
 
-test: test-dart test-python
+test: test-python test-dart
 
 watch-test-dart:
 	nodemon -w dart -e dart -x 'make test-dart'

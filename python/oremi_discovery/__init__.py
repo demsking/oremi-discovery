@@ -65,10 +65,10 @@ class DiscoveryService:
   def stop(self) -> None:
     self.logger.info(f'Stopping discovery service {self.client_id}...')
     for service in self.subscribed_services:
-      self.publish_unavailable(service)
+      self.unpublish(service)
     self.client.loop_stop()
     self.client.disconnect()
-    self.logger.info('Discovery service {self.client_id} stopped.')
+    self.logger.info(f'Discovery service {self.client_id} stopped.')
 
   def publish(self, service: Service) -> None:
     if not self.connected:
@@ -85,7 +85,7 @@ class DiscoveryService:
     self.logger.info(f"Published service announcement to topic '{topic}'")
     self.subscribed_services.append(service)
 
-  def publish_unavailable(self, service: Service) -> None:
+  def unpublish(self, service: Service) -> None:
     if not self.connected:
       raise RuntimeError('Client is not connected.')
 
@@ -119,7 +119,7 @@ class DiscoveryService:
 
   def _on_disconnect(self, client, userdata, flags, reason_code, properties) -> None:
     for service in self.subscribed_services:
-      self.publish_unavailable(service)
+      self.unpublish(service)
     self.subscribed_services.clear()
     self.logger.info(f'Disconnected from {self.client.host}:{self.client.port} - {reason_code}')
     self.connected = False
