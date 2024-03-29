@@ -13,7 +13,7 @@
       {
         devShell = with pkgs; mkShell rec {
           EDITOR = "vim";
-          PYTHONPATH = ".:./python:$PYTHONPATH";
+          VIRTUAL_ENV_DISABLE_PROMPT = "true";
           buildInputs = [
             # tmux
             git
@@ -45,10 +45,6 @@
             ruff
             check-jsonschema
             gnumake
-            bandit
-            skjold
-            shellcheck
-            prospector
             pre-commit
             editorconfig-checker
             python310Packages.doc8
@@ -57,14 +53,18 @@
             python310Packages.reorder-python-imports
           ];
           shellHook = ''
-            export SERVICE_HOST="$(hostname -I | awk '{print $1}')"
+            # Python
+            export PIP_PREFIX=${envDir}
+            export PYTHONUSERBASE=${envDir}
+            export PYTHON_SITE_PACKAGES=$PIP_PREFIX/${python310.sitePackages}
+            export PYTHONPATH=$(pwd):$PYTHON_SITE_PACKAGES:$PYTHONPATH
 
             # Disable Dart analytics
             dart --disable-analytics > /dev/null
 
             # Python
             virtualenv `basename ${envDir}`
-            VIRTUAL_ENV_DISABLE_PROMPT=true source ${envDir}/bin/activate
+            source ${envDir}/bin/activate
 
             # Install pre-commit hooks
             pre-commit install -f

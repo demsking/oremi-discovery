@@ -63,12 +63,12 @@ class DiscoveryService:
     self.connected = True
 
   def stop(self) -> None:
-    self.logger.info('Stopping DiscoveryService...')
+    self.logger.info(f'Stopping discovery service {self.client_id}...')
     for service in self.subscribed_services:
       self.publish_unavailable(service)
     self.client.loop_stop()
     self.client.disconnect()
-    self.logger.info('DiscoveryService stopped.')
+    self.logger.info('Discovery service {self.client_id} stopped.')
 
   def publish(self, service: Service) -> None:
     if not self.connected:

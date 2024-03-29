@@ -48,24 +48,14 @@ repos:
         entry: editorconfig-checker
         types: [ text ]
         require_serial: true
-  - repo: https://github.com/PyCQA/bandit
-    rev: 1.7.8
-    hooks:
-      - id: bandit
   - repo: https://github.com/PyCQA/doc8
     rev: v1.1.1
     hooks:
       - id: doc8
-  # - repo: https://github.com/PyCQA/prospector
-  #   rev: v1.10.3
-  #   hooks:
-  #     - id: prospector
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v3.15.2
+  - repo: local
     hooks:
-      - id: pyupgrade
-        args: [--py38-plus]
-  # - repo: https://github.com/twu/skjold
-  #   rev: v0.6.1
-  #   hooks:
-  #     - id: skjold
+      - id: run-pytest
+        name: Run Pytest
+        entry: python -m pytest
+        language: system
+        types: [python]

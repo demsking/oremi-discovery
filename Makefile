@@ -64,12 +64,13 @@ watch-test:
 	$(MAKE) -j2 watch-test-dart watch-test-python
 
 # Generate a coverage report for the codebase using pytest
+.PHONY: coverage
 coverage:
-	pytest --cov=python
+	pytest --cov=python/oremi_discovery
 
 # Generate an HTML coverage report for the codebase using pytest
 coverage-html:
-	pytest --cov=python --cov-report=html
+	pytest --cov=python/oremi_discovery --cov-report=html
 
 # Clean up build artifacts and temporary files
 clean:
@@ -82,7 +83,7 @@ discovery-package:
 	  && poetry build --no-cache \
 	  && twine check dist/*
 
-dist: discovery-package
+packages: discovery-package
 
 # Publish a distribution of the project to TestPyPI using twine
 publish-discovery-client: discovery-package

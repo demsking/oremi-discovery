@@ -1,0 +1,94 @@
+# Copyright 2024 Sébastien Demanou. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ==============================================================================
+import asyncio
+import logging
+import time
+from unittest.mock import MagicMock
+
+import paho.mqtt.client as mqtt
+import pytest
+from oremi_discovery import DiscoveryService
+from oremi_discovery import Service
+
+# Define fixture for creating a logger
+@pytest.fixture
+def logger():
+  return logging.getLogger()
+
+# Define fixture for creating a DiscoveryService instance
+@pytest.fixture
+def discovery_service(logger):
+  return DiscoveryService(logger=logger)
+
+# Define a test case for starting and stopping the service
+def test_start_and_stop(discovery_service):
+  asyncio.run(discovery_service.start('test.mosquitto.org', 1883))
+  time.sleep(1)  # Let it connect
+  assert discovery_service.connected == True
+  discovery_service.stop()
+  assert discovery_service.connected == False
+
+# Define a test case for publishing a service announcement
+def test_publish(discovery_service):
+  with pytest.raises(RuntimeError):
+      discovery_service.publish(Service(name='test', host='localhost', port=1234))
+  asyncio.run(discovery_service.start('test.mosquitto.org', 1883))
+  time.sleep(1)  # Let it connect
+  discovery_service.publish(Service(name='test', host='localhost', port=1234))
+  # Add assertions as necessary
+
+# Define a test case for publishing unavailability
+def test_publish_unavailable(discovery_service):
+  with pytest.raises(RuntimeError):
+      discovery_service.publish_unavailable(Service(name='test', host='localhost', port=1234))
+  asyncio.run(discovery_service.start('test.mosquitto.org', 1883))
+  time.sleep(1)  # Let it connect
+  discovery_service.publish_unavailable(Service(name='test', host='localhost', port=1234))
+  # Add assertions as necessary
+
+# Define a test case for watching service availability
+def test_watch(discovery_service):
+  with pytest.raises(RuntimeError):
+    discovery_service.watch('test', lambda x: None)
+  asyncio.run(discovery_service.start('test.mosquitto.org', 1883))
+  time.sleep(1)  # Let it connect
+  callback_mock = MagicMock()
+  discovery_service.watch('test', callback_mock)
+  # Add assertions as necessary
+
+# Define a test case for connection status on_connect
+def test_on_connect_success(discovery_service):
+  discovery_service._on_connect(None, None, None, mqtt.CONNACK_ACCEPTED, None)
+  assert discovery_service.connected == True
+
+def test_on_connect_failed(discovery_service):
+  discovery_service._on_connect(None, None, None, mqtt.CONNACK_REFUSED_NOT_AUTHORIZED, None)
+  assert discovery_service.connected == False
+
+# Define a test case for handling on_disconnect
+def test_on_disconnect(discovery_service):
+  discovery_service._on_connect(None, None, None, mqtt.CONNACK_ACCEPTED, None)
+  discovery_service.publish(Service(name='test', host='localhost', port=1234))
+  discovery_service._on_disconnect(None, None, None, 0, None)
+  assert len(discovery_service.subscribed_services) == 0
+  assert discovery_service.connected == False
+
+# Define a test case for handling service availability message
+def test_on_service_availability_message(discovery_service):
+  discovery_service._on_connect(None, None, None, mqtt.CONNACK_ACCEPTED, None)
+  callback_mock = MagicMock()
+  discovery_service.watch('test', callback_mock)
+  discovery_service._on_service_availability_message(None, None, MagicMock(payload=b'{"service": {"name": "test", "host": "localhost", "port": 1234}, "available": true}'))
+  assert callback_mock.called
