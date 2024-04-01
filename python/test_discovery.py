@@ -15,6 +15,7 @@
 import asyncio
 import logging
 import time
+from unittest.mock import AsyncMock
 from unittest.mock import MagicMock
 
 import paho.mqtt.client as mqtt
@@ -87,8 +88,18 @@ def test_on_disconnect(discovery_service):
 
 # Define a test case for handling service availability message
 def test_on_service_availability_message(discovery_service):
+  callback_mock = AsyncMock()
   discovery_service._on_connect(None, None, None, mqtt.CONNACK_ACCEPTED, None)
-  callback_mock = MagicMock()
   discovery_service.watch('test', callback_mock)
   discovery_service._on_service_availability_message(None, None, MagicMock(payload=b'{"service": {"name": "test", "host": "localhost", "port": 1234}, "available": true}'))
   assert callback_mock.called
+
+# Define a test case for handling service availability message
+def test_on_service_unavailability_message(discovery_service):
+  on_available_callback_mock = AsyncMock()
+  on_unavailable_callback_mock = AsyncMock()
+  discovery_service._on_connect(None, None, None, mqtt.CONNACK_ACCEPTED, None)
+  discovery_service.watch('test', on_available_callback_mock, on_unavailable_callback_mock)
+  discovery_service._on_service_availability_message(None, None, MagicMock(payload=b'{"service": {"name": "test", "host": "localhost", "port": 1234}, "available": false}'))
+  assert on_available_callback_mock.called == False
+  assert on_unavailable_callback_mock.called

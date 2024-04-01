@@ -17,7 +17,7 @@ import logging
 
 from oremi_discovery import DiscoveryService
 from oremi_discovery import Service
-from oremi_discovery import Subscription
+
 
 # Example usage:
 async def main():
@@ -34,11 +34,14 @@ async def main():
 
   await discovery.start('test.mosquitto.org')
 
-  def on_service_available(subscription: Subscription):
-    logger.info(subscription)
+  async def on_service_available(service: Service):
+    logger.info(f'Service {service.name} is available')
 
-  discovery.watch('Service1', on_service_available)
-  discovery.watch('Service2', on_service_available)
+  async def on_service_unavailable(service: Service):
+    logger.info(f'Service {service.name} is unavailable')
+
+  discovery.watch('Service1', on_service_available, on_service_unavailable)
+  discovery.watch('Service2', on_service_available, on_service_unavailable)
 
   await asyncio.sleep(1)
   discovery.publish(service1)
@@ -49,7 +52,8 @@ async def main():
   await asyncio.sleep(2)
   discovery.unpublish(service1)
 
-  # Keep the script running for a while to observe service availability notifications
+  # Keep the script running for a while to observe service availability
+  # notifications
   input('Press Enter to stop...\n')
   logger.info('Stopping discovery...')
   discovery.stop()
