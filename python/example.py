@@ -32,7 +32,7 @@ async def main():
   service1 = Service(name='Service1', host='192.168.1.100', port=8080)
   service2 = Service(name='Service2', host='192.168.1.100', port=8080)
 
-  await discovery.start('test.mosquitto.org')
+  await discovery.connect('test.mosquitto.org')
 
   async def on_service_available(service: Service):
     logger.info(f'Service {service.name} is available')
@@ -56,7 +56,7 @@ async def main():
   # notifications
   input('Press Enter to stop...\n')
   logger.info('Stopping discovery...')
-  discovery.stop()
+  discovery.disconnect()
 
 if __name__ == '__main__':
   try:

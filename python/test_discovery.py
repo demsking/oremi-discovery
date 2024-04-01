@@ -35,17 +35,17 @@ def discovery_service(logger):
 
 # Define a test case for starting and stopping the service
 def test_start_and_stop(discovery_service):
-  asyncio.run(discovery_service.start('test.mosquitto.org', 1883))
+  asyncio.run(discovery_service.connect('test.mosquitto.org', 1883))
   time.sleep(1)  # Let it connect
   assert discovery_service.connected == True
-  discovery_service.stop()
+  discovery_service.disconnect()
   assert discovery_service.connected == False
 
 # Define a test case for publishing a service announcement
 def test_publish(discovery_service):
   with pytest.raises(RuntimeError):
       discovery_service.publish(Service(name='test', host='localhost', port=1234))
-  asyncio.run(discovery_service.start('test.mosquitto.org', 1883))
+  asyncio.run(discovery_service.connect('test.mosquitto.org', 1883))
   time.sleep(1)  # Let it connect
   discovery_service.publish(Service(name='test', host='localhost', port=1234))
   # Add assertions as necessary
@@ -54,7 +54,7 @@ def test_publish(discovery_service):
 def test_unpublish(discovery_service):
   with pytest.raises(RuntimeError):
       discovery_service.unpublish(Service(name='test', host='localhost', port=1234))
-  asyncio.run(discovery_service.start('test.mosquitto.org', 1883))
+  asyncio.run(discovery_service.connect('test.mosquitto.org', 1883))
   time.sleep(1)  # Let it connect
   discovery_service.unpublish(Service(name='test', host='localhost', port=1234))
   # Add assertions as necessary
@@ -63,7 +63,7 @@ def test_unpublish(discovery_service):
 def test_watch(discovery_service):
   with pytest.raises(RuntimeError):
     discovery_service.watch('test', lambda x: None)
-  asyncio.run(discovery_service.start('test.mosquitto.org', 1883))
+  asyncio.run(discovery_service.connect('test.mosquitto.org', 1883))
   time.sleep(1)  # Let it connect
   callback_mock = MagicMock()
   discovery_service.watch('test', callback_mock)

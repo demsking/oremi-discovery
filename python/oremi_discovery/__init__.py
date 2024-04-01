@@ -70,7 +70,7 @@ class DiscoveryService:
     self.client.on_disconnect = self._on_disconnect
     self.connected = False
 
-  async def start(self, broker_address: str, port: int = 1883) -> None:
+  async def connect(self, broker_address: str, port: int = 1883) -> None:
     self.logger.info(f'Connecting to {broker_address}:{port}')
     self.client.connect_async(broker_address, port, clean_start=True)
     self.client.loop_start()
@@ -80,7 +80,7 @@ class DiscoveryService:
       await asyncio.sleep(0.1)  # Check connection status periodically
     self.connected = True
 
-  def stop(self) -> None:
+  def disconnect(self) -> None:
     self.logger.info(f'Stopping discovery service {self.client_id}...')
     for service in list(self.subscribed_services):
       self.unpublish(service)
@@ -99,8 +99,8 @@ class DiscoveryService:
     properties = mqtt.Properties(mqtt.PacketTypes.PUBLISH)
     properties.UserProperty = ('client_id', self.client_id)
 
-    self.client.publish(topic, payload=payload, qos=1, retain=False, properties=properties)
-    self.logger.info(f"Published service availability '{service.name}'")
+    self.client.publish(topic, payload=payload, qos=1, retain=True, properties=properties)
+    self.logger.info(f'Published service availability {service.name}')
     self.subscribed_services.add(service)
 
   def unpublish(self, service: Service) -> None:
@@ -115,7 +115,7 @@ class DiscoveryService:
     properties.UserProperty = ('client_id', self.client_id)
 
     self.client.publish(topic, payload=payload, qos=1, retain=False, properties=properties)
-    self.logger.info(f"Published service unavailability '{service.name}'")
+    self.logger.info(f'Published service unavailability {service.name}')
 
     if service in self.subscribed_services:
       self.subscribed_services.remove(service)
@@ -130,7 +130,7 @@ class DiscoveryService:
       raise RuntimeError('Client is not connected.')
 
     topic = f'{self.topic_prefix}/{service_name}'
-    self.client.subscribe(topic, qos=0)
+    self.client.subscribe(topic, qos=1)
     self.subscriptions[service_name] = on_service_available, on_service_unavailable
     self.client.message_callback_add(topic, self._on_service_availability_message)
     self.logger.info(f"Subscribed to service availability '{service_name}'")
