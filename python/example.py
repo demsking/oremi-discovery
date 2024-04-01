@@ -29,8 +29,8 @@ async def main():
   logger.addHandler(ch)
 
   discovery = DiscoveryService(client_id='oremi-example', logger=logger)
-  service1 = Service(name='Service1', host='192.168.1.100', port=8080)
-  service2 = Service(name='Service2', host='192.168.1.100', port=8080)
+  service1 = Service(name='Service1', version='v1', protocol='ws', host='192.168.1.100', port=5555)
+  service2 = Service(name='Service2', version='v1', protocol='http', host='192.168.1.100', port=8080)
 
   await discovery.connect('test.mosquitto.org')
 
