@@ -13,7 +13,7 @@ outdated:
 	dart pub -C dart outdated
 
 update:
-	poetry update
+	poetry -C python update
 	dart pub -C dart/ upgrade
 	nix flake update
 	pre-commit autoupdate
