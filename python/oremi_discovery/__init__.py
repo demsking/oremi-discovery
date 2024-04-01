@@ -40,7 +40,7 @@ class Service:
 @dataclass_json
 @dataclass(kw_only=True)
 class Subscription:
-  service: Service
+  service: Service | None = None
   available: bool = False
 
 
@@ -63,7 +63,7 @@ class DiscoveryService:
 
     self.topic_prefix = topic_prefix
     self.logger = logger
-    self.subscriptions: dict[str, tuple[ServiceWatchNotify, ServiceWatchNotify | None]] = {}
+    self.subscriptions: dict[str, tuple[Subscription, ServiceWatchNotify, ServiceWatchNotify | None]] = {}
     self.subscribed_services: set[Service] = set()
 
     self.client.on_connect = self._on_connect
@@ -125,15 +125,20 @@ class DiscoveryService:
     service_name: str,
     on_service_available: ServiceWatchNotify,
     on_service_unavailable: ServiceWatchNotify | None = None,
-  ) -> None:
+  ) -> Subscription:
     if not self.connected:
       raise RuntimeError('Client is not connected.')
 
+    if service_name in self.subscriptions:
+      return self.subscriptions[service_name][0]
+
     topic = f'{self.topic_prefix}/{service_name}'
+    subscription = Subscription(available=False)
     self.client.subscribe(topic, qos=1)
-    self.subscriptions[service_name] = on_service_available, on_service_unavailable
+    self.subscriptions[service_name] = subscription, on_service_available, on_service_unavailable
     self.client.message_callback_add(topic, self._on_service_availability_message)
     self.logger.info(f"Subscribed to service availability '{service_name}'")
+    return subscription
 
   def _on_connect(self, client, userdata, flags, reason_code, properties) -> None:
     if reason_code == mqtt.CONNACK_ACCEPTED:
@@ -151,11 +156,13 @@ class DiscoveryService:
     self.connected = False
 
   def _on_service_availability_message(self, client, userdata, msg: mqtt.MQTTMessage) -> None:
-    subscription = Subscription.from_json(msg.payload) # type: ignore pylint: disable=no-member
-    on_service_available, on_service_unavailable = self.subscriptions.get(subscription.service.name, (None, None))
+    message = Subscription.from_json(msg.payload) # type: ignore pylint: disable=no-member
+    subscription, on_service_available, on_service_unavailable = self.subscriptions.get(message.service.name, (None, None, None))
 
-    if on_service_available:
+    if subscription and on_service_available:
       loop = asyncio.new_event_loop()
+      subscription.available = message.available
+      subscription.service = message.service
 
       if subscription.available:
         loop.run_until_complete(on_service_available(subscription.service))
