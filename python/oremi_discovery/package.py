@@ -22,7 +22,10 @@ __all__ = [
   'APP_VERSION',
 ]
 
-with open(os.path.join(os.path.dirname(__file__), '..', 'pyproject.toml'), encoding = 'utf-8') as file:
+_current_dir = os.path.dirname(os.path.abspath(__file__))
+_pyproject_path = os.path.join(_current_dir, '..', 'pyproject.toml')
+
+with open(_pyproject_path, encoding = 'utf-8') as file:
   package = toml.load(file)['tool']['poetry']
   APP_NAME = package['name']
   APP_DESCRIPTION = package['description']

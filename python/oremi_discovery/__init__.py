@@ -51,11 +51,17 @@ async def start() -> None:
     data=json.loads(args.service_data),
   )
 
-  discovery.publish(service)
+  async def shutdown(sigid: signal.Signals, loop):
+    logger.info(f'Received exit signal {sigid.name}...')
+    logger.info('Cancelling tasks...')
+    for task in asyncio.all_tasks():
+      task.cancel()
 
   # Register the signal handlers
   for signame in [signal.SIGINT, signal.SIGTERM]:
-    loop.add_signal_handler(signame, lambda signame=signame: discovery.disconnect())
+    loop.add_signal_handler(signame, lambda signame=signame: asyncio.create_task(shutdown(signame, loop)))
+
+  discovery.publish(service)
 
   # Run the server
   try:

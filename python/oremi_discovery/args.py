@@ -10,6 +10,7 @@ def parse_arguments():
   parser.add_argument(
     '--mqtt-host',
     type=str,
+    required=True,
     help='MQTT broker host address.'
   )
 
@@ -32,6 +33,13 @@ def parse_arguments():
     type=str,
     required=True,
     help='Name of the service used to register discovery service.',
+  )
+
+  parser.add_argument(
+    '--service-version',
+    type=str,
+    required=True,
+    help='Version of the service used to register discovery service.',
   )
 
   parser.add_argument(

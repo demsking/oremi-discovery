@@ -7,12 +7,12 @@
   "files.trimTrailingWhitespace": true,
   "files.exclude": {
     "venv": true,
-    "app": true,
     "**/.directory": true,
     "**/.coverage": true,
-    "**/build": true,
+    "**/.direnv": true,
+    "**/.nix-node": true,
+    "**/.ruff_cache": true,
     "**/.pytest_cache": true,
-    "**/cache_dir": true,
     "**/*.egg-info": true,
     "**/__pycache__": true,
     "**/dist": true
@@ -23,8 +23,7 @@
     "reportPrivateImportUsage": "none"
   },
   "python.analysis.exclude": [
-    "venv/**",
-    "lab/**"
+    "venv/**"
   ],
   "python.analysis.autoImportCompletions": true,
   "python.analysis.completeFunctionParens": true,
