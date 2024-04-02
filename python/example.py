@@ -20,7 +20,7 @@ from oremi_discovery import Service
 
 
 # Example usage:
-async def main():
+async def main() -> None:
   logger = logging.getLogger('discovery-example')
   logger.setLevel(logging.INFO)
   ch = logging.StreamHandler()
@@ -28,7 +28,7 @@ async def main():
   ch.setFormatter(formatter)
   logger.addHandler(ch)
 
-  discovery = DiscoveryService(client_id='oremi-example', logger=logger)
+  discovery = DiscoveryService(client_id='oremi-example', logger=logger, channel='example')
   service1 = Service(name='Service1', version='v1', protocol='ws', host='192.168.1.100', port=5555)
   service2 = Service(name='Service2', version='v1', protocol='http', host='192.168.1.100', port=8080)
 
@@ -52,8 +52,7 @@ async def main():
   await asyncio.sleep(2)
   discovery.unpublish(service1)
 
-  # Keep the script running for a while to observe service availability
-  # notifications
+  # Keep the script running for a while to observe service availability notifications
   input('Press Enter to stop...\n')
   logger.info('Stopping discovery...')
   discovery.disconnect()

@@ -2,21 +2,12 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug Current Python File",
-      "type": "python",
+      "name": "Debug",
+      "type": "debugpy",
       "request": "launch",
-      "program": "${file}",
+      "program": "python/example.py",
       "console": "integratedTerminal",
       "python": "${workspaceFolder}/venv/bin/python",
-      "cwd": "${workspaceFolder}",
-      "justMyCode": false
-    },
-    {
-      "name": "Debug",
-      "type": "python",
-      "request": "launch",
-      "module": "discovery",
-      "args": [],
       "cwd": "${workspaceFolder}",
       "justMyCode": false
     }
