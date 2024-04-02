@@ -1,4 +1,4 @@
-# Copyright 2023 Sébastien Demanou. All Rights Reserved.
+# Copyright 2024 Sébastien Demanou. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,23 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-import os
+from importlib.metadata import metadata
 
-import toml
 
-__all__ = [
-  'APP_NAME',
-  'APP_DESCRIPTION',
-  'APP_VERSION',
-]
+def get_package_info():
+  # Get metadata for the current package
+  pkg_metadata = metadata(__name__.split('.')[0])
 
-_current_dir = os.path.dirname(os.path.abspath(__file__))
-_pyproject_path = os.path.join(_current_dir, '..', 'pyproject.toml')
+  # Extract package name, version, and description
+  pkg_name = pkg_metadata['name']
+  pkg_version = pkg_metadata['version']
+  pkg_description = pkg_metadata['summary']  # or 'description' if you prefer
 
-with open(_pyproject_path, encoding = 'utf-8') as file:
-  package = toml.load(file)['tool']['poetry']
-  APP_NAME = package['name']
-  APP_DESCRIPTION = package['description']
-  APP_VERSION = package['version']
-  del package
-  del toml
+  return pkg_name, pkg_version, pkg_description
+
+APP_NAME, APP_VERSION, APP_DESCRIPTION = get_package_info()

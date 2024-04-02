@@ -25,7 +25,6 @@ secondary = true
 python = ">=3.10,<4.0"
 paho-mqtt = "^2.0.0"
 oremi-core = "^1.0.0.dev22"
-toml = "^0.10.2"
 
 [tool.ruff]
 fix = true
