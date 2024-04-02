@@ -26,13 +26,13 @@ from dataclasses_json import dataclass_json
 
 
 @dataclass_json
-@dataclass(kw_only=True)
+@dataclass
 class Service:
   name: str
   protocol: str
   host: str
   port: int
-  version: str | None = None
+  version: str | None = field(default=None)
   data: dict = field(default_factory=dict)
 
   @property
@@ -47,13 +47,13 @@ class Service:
 
 
 @dataclass_json
-@dataclass(kw_only=True)
+@dataclass
 class SubscriptionMessage:
   service: Service
-  available: bool = False
+  available: bool = field(default=False)
 
 
-@dataclass(kw_only=True)
+@dataclass
 class SubscriptionEvent:
   ready: asyncio.Event = field(init=False, default_factory=asyncio.Event)
 
