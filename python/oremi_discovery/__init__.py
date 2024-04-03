@@ -53,7 +53,7 @@ async def start() -> None:
 
   async def shutdown(sigid: signal.Signals, loop):
     logger.info(f'Received exit signal {sigid.name}...')
-    logger.info('Cancelling tasks...')
+    logger.info('Gracefully stopping...')
     for task in asyncio.all_tasks():
       task.cancel()
 

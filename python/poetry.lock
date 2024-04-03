@@ -35,14 +35,14 @@ pyreadline3 = {version = "*", markers = "sys_platform == \"win32\" and python_ve
 
 [[package]]
 name = "oremi-core"
-version = "1.0.0.dev22"
+version = "1.0.0.dev23"
 description = "The cornerstone of the Oremi ecosystem"
 category = "main"
 optional = false
-python-versions = ">=3.10"
+python-versions = ">=3.8,<4.0"
 files = [
-    {file = "oremi_core-1.0.0.dev22-py3-none-any.whl", hash = "sha256:a24a8e2369a9d9d7ec7e266a54e83c1e1bce8ccfaefaf613ec12ef4dc5d970e3"},
-    {file = "oremi_core-1.0.0.dev22.tar.gz", hash = "sha256:ce5e011ae5900e456286e92b13760c3f684f32f94a3807264dc754de2178fda6"},
+    {file = "oremi_core-1.0.0.dev23-py3-none-any.whl", hash = "sha256:3844922fb060f23e9553b3e2b25ac86ce6a17e615e073047ac13f739e084d90c"},
+    {file = "oremi_core-1.0.0.dev23.tar.gz", hash = "sha256:92089b88a577f329e2f48110a06e315e5b87161d627a4973f90f44de96245035"},
 ]
 
 [package.dependencies]
@@ -191,5 +191,5 @@ files = [
 
 [metadata]
 lock-version = "2.0"
-python-versions = ">=3.10,<4.0"
-content-hash = "d1e89fcdc135efcf6fe5f6c33478dfeb3c44e23f65fac0622c92ddbc9299bf60"
+python-versions = ">=3.8,<4.0"
+content-hash = "1c28f0edbc13d23dbe38fe03dcc04a75a551804c03cc569f032bcdea8d73b16a"
