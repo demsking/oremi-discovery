@@ -20,9 +20,8 @@ from collections.abc import Coroutine
 from typing import Any
 
 import paho.mqtt.client as mqtt
-
-from .models import Service
-from .models import SubscriptionMessage
+from oremi_discovery.models import Service
+from oremi_discovery.models import SubscriptionMessage
 
 
 ServiceWatchNotify = Callable[[Service], Coroutine[Any, Any, None]]

@@ -1,7 +1,7 @@
 import argparse
 
-from .package import APP_DESCRIPTION
-from .package import APP_NAME
+from oremi_discovery.package import APP_DESCRIPTION
+from oremi_discovery.package import APP_NAME
 
 
 def parse_arguments():

@@ -18,12 +18,11 @@ import logging
 import signal
 
 from oremi_core.logger import Logger
-
-from .args import parse_arguments
-from .models import Service
-from .package import APP_NAME
-from .package import APP_VERSION
-from .service import DiscoveryService
+from oremi_discovery.args import parse_arguments
+from oremi_discovery.models import Service
+from oremi_discovery.package import APP_NAME
+from oremi_discovery.package import APP_VERSION
+from oremi_discovery.service import DiscoveryService
 
 
 async def start() -> None:
