@@ -2,9 +2,17 @@
 
 [![Buy me a beer](https://img.shields.io/badge/Buy%20me-a%20beer-1f425f.svg)](https://www.buymeacoffee.com/demsking)
 
-A resilient service discovery solution powered by WebSocket. Simplify the
-process of identifying and dynamically connecting to network services.
-Additionally, services can seamlessly share data.
+Oremi Discovery is a library for facilitating device and service discovery and
+communication in IoT networks using the MQTT (Message Queuing Telemetry
+Transport) protocol. It provides a lightweight and efficient solution for
+discovering and managing devices and services on a network, enabling seamless
+communication between them.
+
+Built on top of the Paho MQTT library and utilizing the Oremi Core package,
+Oremi Discovery simplifies the process of discovering and integrating IoT
+devices and services into larger systems. This library is designed with
+scalability, reliability, and ease of use in mind, making it suitable for both
+small-scale and enterprise-level IoT deployments.
 
 ## Getting Started with Oremi Discovery
 

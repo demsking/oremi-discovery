@@ -4,14 +4,36 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "oremi-discovery"
-version = "1.0.0b12"
-description = "Oremi Discovery"
+version = "1.0.0b13"
+description = "Oremi Discovery is a library for facilitating device and service discovery and communication in IoT networks using the MQTT protocol."
+keywords = ["oremi", "discovery", "service", "mqtt"]
 authors = ["Sébastien Demanou <demsking@gmail.com>"]
 license = "Apache-2.0"
 readme = "README.md"
+repository = "https://gitlab.com/demsking/oremi-discovery"
+documentation = "https://gitlab.com/demsking/oremi-discovery/-/blob/main/README.md"
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Topic :: Software Development :: Localization",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+]
+
 packages = [
   { include = "oremi_discovery" },
 ]
+
+[tool.poetry.urls]
+"Say Thanks!" = "https://www.buymeacoffee.com/demsking"
+"Source" = "https://gitlab.com/demsking/oremi-discovery"
+"Tracker" = "https://gitlab.com/demsking/oremi-discovery/-/issues"
 
 [tool.poetry.scripts]
 oremi-discovery = "oremi_discovery:main"
