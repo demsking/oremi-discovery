@@ -14,6 +14,7 @@
 # ==============================================================================
 import json
 from typing import Optional
+from typing import Union
 
 
 class Service:
@@ -49,7 +50,7 @@ class Service:
     return cls(**data)
 
   @classmethod
-  def from_json(cls, json_str: str | bytes | bytearray):
+  def from_json(cls, json_str: Union[str, bytes, bytearray]):
     json_data = json.loads(json_str)
     return cls(**json_data)
 
@@ -66,7 +67,7 @@ class SubscriptionMessage:
     self.available = available
 
   @classmethod
-  def from_json(cls, json_str: str | bytes | bytearray):
+  def from_json(cls, json_str: Union[str, bytes, bytearray]):
     json_data = json.loads(json_str)
     service = Service.from_dict(json_data['service'])
     return cls(service=service, available=json_data['available'])
