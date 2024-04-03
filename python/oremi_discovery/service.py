@@ -15,9 +15,9 @@
 import asyncio
 import logging
 import uuid
-from collections.abc import Callable
-from collections.abc import Coroutine
 from typing import Any
+from typing import Callable
+from typing import Coroutine
 from typing import Optional
 
 import paho.mqtt.client as mqtt
