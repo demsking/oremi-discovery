@@ -18,6 +18,7 @@ import uuid
 from collections.abc import Callable
 from collections.abc import Coroutine
 from typing import Any
+from typing import Optional
 
 import paho.mqtt.client as mqtt
 from oremi_discovery.models import Service
@@ -30,7 +31,7 @@ class DiscoveryService:
   def __init__(
     self,
     *,
-    client_id: str | None = None,
+    client_id: Optional[str] = None,
     channel: str = 'discovery',
     logger: logging.Logger,
   ) -> None:
@@ -43,7 +44,7 @@ class DiscoveryService:
 
     self.channel = channel
     self.logger = logger
-    self.subscriptions: dict[str, tuple[asyncio.Event, ServiceWatchNotify, ServiceWatchNotify | None]] = {}
+    self.subscriptions: dict[str, tuple[asyncio.Event, ServiceWatchNotify, Optional[ServiceWatchNotify]]] = {}
     self.subscribed_services: set[Service] = set()
 
     self.client.on_connect = self._on_connect
@@ -104,7 +105,7 @@ class DiscoveryService:
     self,
     service_name: str,
     on_service_available: ServiceWatchNotify,
-    on_service_unavailable: ServiceWatchNotify | None = None,
+    on_service_unavailable: Optional[ServiceWatchNotify] = None,
   ) -> asyncio.Event:
     if not self.connected:
       raise RuntimeError('Client is not connected.')

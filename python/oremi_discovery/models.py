@@ -13,6 +13,7 @@
 # limitations under the License.
 # ==============================================================================
 import json
+from typing import Optional
 
 
 class Service:
@@ -23,8 +24,8 @@ class Service:
     protocol: str,
     host: str,
     port: int,
-    version: str | None = None,
-    data: dict | None = None,
+    version: Optional[str] = None,
+    data: Optional[dict] = None,
   ) -> None:
     self.name = name
     self.protocol = protocol
