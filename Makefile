@@ -73,14 +73,14 @@ clean:
 	rm -rf **/dist **/__pycache__ .ruff_cache .pytest_cache **/.ruff_cache **/.pytest_cache
 
 # Build a distribution of the project using poetry and twine
-discovery-package:
+package:
 	cd python \
 	  && rm -rf dist/ \
 	  && poetry build --no-cache \
 	  && twine check dist/*
 
-packages: discovery-package
-
-# Publish a distribution of the project to TestPyPI using twine
-publish: discovery-package
+publish:
+	git commit pyproject.toml -m 'Release $(APP_VERSION)'
+	git tag v$(APP_VERSION)
 	twine upload -r testpypi python/dist/*
+	git push --tags origin main
