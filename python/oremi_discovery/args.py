@@ -22,6 +22,11 @@ def parse_arguments():
   )
 
   parser.add_argument(
+    '--client-id',
+    type=str,
+    help='MQTT base client ID. Default service-name/service-version.'
+  )
+  parser.add_argument(
     '--discovery-channel',
     type=str,
     default='discovery',

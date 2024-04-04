@@ -1,4 +1,4 @@
-# Copyright 2023 Sébastien Demanou. All Rights Reserved.
+# Copyright 2024 Sébastien Demanou. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ from oremi_core.logger import Logger
 from oremi_discovery.args import parse_arguments
 from oremi_discovery.models import Service
 from oremi_discovery.package import APP_NAME
-from oremi_discovery.package import APP_VERSION
 from oremi_discovery.service import DiscoveryService
 
 
@@ -31,7 +30,7 @@ async def start() -> None:
   log_level = logging.DEBUG if args.verbose else logging.INFO
   logger = Logger.create(APP_NAME, filename=args.log_file, level=log_level)
   discovery = DiscoveryService(
-    client_id=f'{APP_NAME}/{APP_VERSION}',
+    client_id=args.client_id if args.service_name else f'{args.service_name}/{args.service_version}',
     channel=args.discovery_channel,
     logger=logger,
   )
