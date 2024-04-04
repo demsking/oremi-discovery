@@ -1,3 +1,5 @@
+APP_VERSION := $(shell python version.py)
+
 .PHONY: all certificates clean dist tests install test discovery-package publish-discovery
 
 # Start the development environment using tmuxinator
@@ -80,7 +82,7 @@ package:
 	  && twine check dist/*
 
 publish:
-	git commit pyproject.toml -m 'Release $(APP_VERSION)'
+	echo git commit python/pyproject.toml -m 'Release $(APP_VERSION)'
 	git tag v$(APP_VERSION)
 	twine upload -r testpypi python/dist/*
 	git push --tags origin main
