@@ -55,7 +55,15 @@ class DiscoveryService:
     self.client.on_message = self._on_message
     self.connected = False
 
+    # Enable auto reconnect for MQTT client to avoid losing connection when the broker is down.
+    self.client.reconnect_delay_set(min_delay=1, max_delay=120)
+
+  def clear(self):
+    self.subscriptions.clear()
+    self.subscribed_services.clear()
+
   async def connect(self, broker_address: str, port: int = 1883) -> None:
+    self.clear()
     self.logger.info(f'Connecting to broker {broker_address}:{port} with client ID {self.client_id}')
     self.client.connect_async(broker_address, port, clean_start=True)
     self.client.loop_start()
@@ -66,6 +74,7 @@ class DiscoveryService:
     self.connected = True
 
   def disconnect(self) -> None:
+    self.clear()
     self.logger.info(f'Disconnecting discovery service {self.client_id}...')
     for service in list(self.subscribed_services):
       self.unpublish(service)
@@ -137,7 +146,6 @@ class DiscoveryService:
       self.logger.error(f'Connection to {self.client.host}:{self.client.port} failed: {mqtt.connack_string(reason_code)}.')
 
   def _on_disconnect(self, client, userdata, flags, reason_code, properties) -> None:
-    self.subscribed_services.clear()
     self.logger.info(f'Disconnected from {self.client.host}:{self.client.port} - {reason_code}')
     self.connected = False
 

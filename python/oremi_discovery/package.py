@@ -22,8 +22,9 @@ def get_package_info():
   # Extract package name, version, and description
   pkg_name = pkg_metadata['name']
   pkg_version = pkg_metadata['version']
-  pkg_description = pkg_metadata['summary']  # or 'description' if you prefer
+  pkg_description = pkg_metadata['description']
 
   return pkg_name, pkg_version, pkg_description
+
 
 APP_NAME, APP_VERSION, APP_DESCRIPTION = get_package_info()

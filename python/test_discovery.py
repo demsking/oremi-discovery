@@ -82,6 +82,7 @@ def test_on_connect_failed(discovery_service):
 def test_on_disconnect(discovery_service):
   discovery_service._on_connect(None, None, None, mqtt.CONNACK_ACCEPTED, None)
   discovery_service.publish(Service(name='test', version='v1', protocol='ws', host='localhost', port=1234))
+  discovery_service.disconnect()
   discovery_service._on_disconnect(None, None, None, 0, None)
   assert len(discovery_service.subscribed_services) == 0
   assert discovery_service.connected == False
