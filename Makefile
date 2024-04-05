@@ -81,7 +81,7 @@ package:
 	  && poetry build --no-cache \
 	  && twine check dist/*
 
-publish:
+publish: package
 	git commit python/pyproject.toml -m 'Release $(APP_VERSION)'
 	git tag v$(APP_VERSION)
 	twine upload -r testpypi python/dist/*
