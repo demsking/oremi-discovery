@@ -82,7 +82,7 @@ package:
 	  && twine check dist/*
 
 publish:
-	echo git commit python/pyproject.toml -m 'Release $(APP_VERSION)'
+	git commit python/pyproject.toml -m 'Release $(APP_VERSION)'
 	git tag v$(APP_VERSION)
 	twine upload -r testpypi python/dist/*
 	git push --tags origin main
