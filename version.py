@@ -14,7 +14,7 @@
 # ==============================================================================
 import toml
 
-with open('python/pyproject.toml', encoding = 'utf-8') as file:
+with open('python/pyproject.toml', encoding='utf-8') as file:
   __version__ = toml.load(file)['tool']['poetry']['version']
   del toml
 

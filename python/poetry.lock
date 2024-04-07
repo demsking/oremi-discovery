@@ -35,14 +35,14 @@ pyreadline3 = {version = "*", markers = "sys_platform == \"win32\" and python_ve
 
 [[package]]
 name = "oremi-core"
-version = "1.0.0.dev26"
+version = "1.0.0.dev27"
 description = "The cornerstone of the Oremi ecosystem"
 category = "main"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "oremi_core-1.0.0.dev26-py3-none-any.whl", hash = "sha256:568c238faba8d93744ab7b5ac78230923d89d6ca0d6e63975335b8aa7848f6ac"},
-    {file = "oremi_core-1.0.0.dev26.tar.gz", hash = "sha256:91593bc920ca92e89e0fc999a8549256055d30509f82c26f263d12f288035acf"},
+    {file = "oremi_core-1.0.0.dev27-py3-none-any.whl", hash = "sha256:be851a52107e97bbc34799936532dfb12a6308307a3bdf0dd6e6fb6d49ec65d8"},
+    {file = "oremi_core-1.0.0.dev27.tar.gz", hash = "sha256:64c89dba486bb867fe9a56c735a6198664582363ea4c346bcd56ef1f0ad4f581"},
 ]
 
 [package.dependencies]

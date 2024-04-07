@@ -23,17 +23,17 @@ import pytest
 from oremi_discovery import DiscoveryService
 from oremi_discovery import Service
 
-# Define fixture for creating a logger
+
 @pytest.fixture
 def logger():
   return logging.getLogger()
 
-# Define fixture for creating a DiscoveryService instance
+
 @pytest.fixture
 def discovery_service(logger):
   return DiscoveryService(logger=logger)
 
-# Define a test case for starting and stopping the service
+
 def test_start_and_stop(discovery_service):
   asyncio.run(discovery_service.connect('test.mosquitto.org', 1883))
   time.sleep(1)  # Let it connect
@@ -42,6 +42,8 @@ def test_start_and_stop(discovery_service):
   assert discovery_service.connected == False
 
 # Define a test case for publishing a service announcement
+
+
 def test_publish(discovery_service):
   with pytest.raises(RuntimeError):
       discovery_service.publish(Service(name='test', version='v1', protocol='ws', host='localhost', port=1234))
@@ -51,6 +53,8 @@ def test_publish(discovery_service):
   # Add assertions as necessary
 
 # Define a test case for publishing unavailability
+
+
 def test_unpublish(discovery_service):
   with pytest.raises(RuntimeError):
       discovery_service.unpublish(Service(name='test', version='v1', protocol='ws', host='localhost', port=1234))
@@ -60,6 +64,8 @@ def test_unpublish(discovery_service):
   # Add assertions as necessary
 
 # Define a test case for watching service availability
+
+
 def test_watch(discovery_service):
   with pytest.raises(RuntimeError):
     discovery_service.watch('test', lambda x: None)
@@ -70,15 +76,20 @@ def test_watch(discovery_service):
   # Add assertions as necessary
 
 # Define a test case for connection status on_connect
+
+
 def test_on_connect_success(discovery_service):
   discovery_service._on_connect(None, None, None, mqtt.CONNACK_ACCEPTED, None)
   assert discovery_service.connected == True
+
 
 def test_on_connect_failed(discovery_service):
   discovery_service._on_connect(None, None, None, mqtt.CONNACK_REFUSED_NOT_AUTHORIZED, None)
   assert discovery_service.connected == False
 
 # Define a test case for handling on_disconnect
+
+
 def test_on_disconnect(discovery_service):
   discovery_service._on_connect(None, None, None, mqtt.CONNACK_ACCEPTED, None)
   discovery_service.publish(Service(name='test', version='v1', protocol='ws', host='localhost', port=1234))
@@ -88,6 +99,8 @@ def test_on_disconnect(discovery_service):
   assert discovery_service.connected == False
 
 # Define a test case for handling service availability message
+
+
 @pytest.mark.asyncio
 def test_on_message(discovery_service):
   callback_mock = AsyncMock()
@@ -98,6 +111,8 @@ def test_on_message(discovery_service):
   callback_mock.assert_awaited()
 
 # Define a test case for handling service unavailability message
+
+
 def test_on_service_unavailability_message(discovery_service):
   on_available_callback_mock = AsyncMock()
   on_unavailable_callback_mock = AsyncMock()

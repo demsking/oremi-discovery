@@ -2,7 +2,7 @@
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v4.6.0
     hooks:
       - id: trailing-whitespace
       - id: check-added-large-files
@@ -20,6 +20,17 @@ repos:
       - id: double-quote-string-fixer
       - id: name-tests-test
       - id: requirements-txt-fixer
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.5.5
+    hooks:
+      - id: insert-license
+        files: \.py$
+        args: [
+          '--license-filepath', 'LICENSE_HEADER.txt',
+          '--comment-style', '',
+          '--use-current-year',
+          '--no-extra-eol',
+        ]
   - repo: https://github.com/python-jsonschema/check-jsonschema
     rev: 0.28.1
     hooks:
@@ -48,6 +59,18 @@ repos:
         entry: editorconfig-checker
         types: [ text ]
         require_serial: true
+      - id: autopep8
+        name: 'Fix Python Code Style using AutoPEP8'
+        description: 'Runs `autopep8` to format Python code.'
+        entry: autopep8
+        language: system
+        files: '\.py$'
+        args: [
+          '--in-place',
+          '--recursive',
+          # Error codes: https://pycodestyle.pycqa.org/en/latest/intro.html#error-codes
+          '--ignore', 'E1,E501',
+        ]
   - repo: https://github.com/PyCQA/doc8
     rev: v1.1.1
     hooks:
