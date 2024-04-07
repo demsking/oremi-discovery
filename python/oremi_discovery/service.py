@@ -14,6 +14,7 @@
 # ==============================================================================
 import asyncio
 import logging
+import threading
 import uuid
 from typing import Any
 from typing import Callable
@@ -24,6 +25,7 @@ import paho.mqtt.client as mqtt
 from oremi_core.event import Event
 from oremi_discovery.models import Service
 from oremi_discovery.models import SubscriptionMessage
+from oremi_discovery.package import APP_NAME
 
 ServiceWatchNotify = Callable[[Service], Coroutine[Any, Any, None]]
 
@@ -56,7 +58,7 @@ class DiscoveryService:
     # Enable auto reconnect for MQTT client to avoid losing connection when the broker is down.
     self.client.reconnect_delay_set(min_delay=1, max_delay=120)
 
-  def clear(self) -> None:
+  def clear(self):
     self.subscriptions.clear()
     self.subscribed_services.clear()
 
@@ -147,6 +149,12 @@ class DiscoveryService:
     self.logger.info(f'Disconnected from {self.client.host}:{self.client.port} - {reason_code}')
     self.connected = False
 
+  def _exec_async(self, notify: ServiceWatchNotify, subscription: SubscriptionMessage):
+    # Create a new event loop for the separate thread
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(notify(subscription.service))
+
   def _on_message(self, client, userdata, msg: mqtt.MQTTMessage) -> None:
     subscription = SubscriptionMessage.from_json(msg.payload)
     event, on_service_available, on_service_unavailable = self.subscriptions.get(subscription.service.name, (None, None, None))
@@ -154,11 +162,17 @@ class DiscoveryService:
     if event and on_service_available:
       if subscription.available:
         event.set()
-        loop = asyncio.new_event_loop()
-        task = asyncio.ensure_future(on_service_available(subscription.service), loop=loop)
-        loop.run_until_complete(task)
+        threading.Thread(
+          daemon=True,
+          name=f'{APP_NAME}-on-service-available-{subscription.service.name}',
+          target=self._exec_async,
+          args=(on_service_available, subscription)
+        ).start()
       elif on_service_unavailable:
         event.clear()
-        loop = asyncio.new_event_loop()
-        task = asyncio.ensure_future(on_service_unavailable(subscription.service), loop=loop)
-        loop.run_until_complete(task)
+        threading.Thread(
+          daemon=True,
+          name=f'{APP_NAME}-on-service-unavailable-{subscription.service.name}',
+          target=self._exec_async,
+          args=(on_service_unavailable, subscription)
+        ).start()
