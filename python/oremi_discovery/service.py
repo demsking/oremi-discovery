@@ -135,6 +135,16 @@ class DiscoveryService:
 
     return event
 
+  def unwatch(self, service_name: str) -> None:
+    if service_name not in self.subscriptions:
+      return
+    topic = f'{self.channel}/{service_name}'
+    self.client.unsubscribe(topic)
+    event = self.subscriptions[service_name][0]
+    event.set()
+    del self.subscriptions[service_name]
+    self.logger.info(f'Unsubscribed from service availability {service_name}')
+
   def _on_connect(self, client, userdata, flags, reason_code, properties) -> None:
     if reason_code == mqtt.CONNACK_ACCEPTED:
       self.logger.info(f'Connected to {self.client.host}:{self.client.port}')
