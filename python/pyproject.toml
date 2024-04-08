@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "oremi-discovery"
-version = "1.0.0b23"
+version = "1.0.0b24"
 description = "Oremi Discovery is a library for facilitating device and service discovery and communication in IoT networks using the MQTT protocol."
 keywords = ["oremi", "discovery", "service", "mqtt"]
 authors = ["Sébastien Demanou <demsking@gmail.com>"]
