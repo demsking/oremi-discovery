@@ -3,7 +3,7 @@ APP_VERSION := $(shell python version.py)
 .PHONY: all certificates clean dist tests install test discovery-package publish-discovery
 
 # Start the development environment using tmuxinator
-env:
+shell:
 	tmuxinator
 
 install:

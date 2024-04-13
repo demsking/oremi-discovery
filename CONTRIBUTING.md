@@ -62,7 +62,7 @@ Therefore:
 6. **Start environment**
 
    ```sh
-   make env
+   make shell
    ```
 
    This will starts a preconfigured Tmux session.

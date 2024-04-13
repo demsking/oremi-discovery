@@ -13,6 +13,7 @@
       {
         devShell = with pkgs; mkShell rec {
           EDITOR = "vim";
+          SKIP = "insert-license";
           VIRTUAL_ENV_DISABLE_PROMPT = "true";
           buildInputs = [
             # tmux
@@ -28,6 +29,7 @@
             python310Packages.wheel
             python310Packages.twine
             python310Packages.pylint
+            python310Packages.autopep8
             python310Packages.virtualenv
 
             # tests
