@@ -48,24 +48,10 @@ def parse_arguments():
   )
 
   parser.add_argument(
-    '--service-protocol',
+    '--service-uri',
     type=str,
     required=True,
-    help='Protocol used to register discovery service. Example: "http", "wss", "ws".',
-  )
-
-  parser.add_argument(
-    '--service-host',
-    type=str,
-    required=True,
-    help='Host used to register discovery service.',
-  )
-
-  parser.add_argument(
-    '--service-port',
-    type=int,
-    required=True,
-    help='Port used to register discovery service.',
+    help='Service URI used to register discovery service. Example: "http://host:port", "wss://host:port", "ws://host:port".',
   )
 
   parser.add_argument(

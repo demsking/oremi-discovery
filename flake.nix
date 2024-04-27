@@ -49,7 +49,6 @@
             gnumake
             pre-commit
             editorconfig-checker
-            python310Packages.doc8
             python310Packages.pyroma
             python310Packages.pre-commit-hooks
             python310Packages.reorder-python-imports

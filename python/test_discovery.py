@@ -44,19 +44,19 @@ def test_start_and_stop(discovery_service):
 
 def test_publish(discovery_service):
   with pytest.raises(RuntimeError):
-      discovery_service.publish(Service(name='test', version='v1', protocol='ws', host='localhost', port=1234))
+      discovery_service.publish(Service(name='test', version='v1', uri='ws://localhost:1234'))
   asyncio.run(discovery_service.connect('test.mosquitto.org', 1883))
   time.sleep(1)  # Let it connect
-  discovery_service.publish(Service(name='test', version='v1', protocol='ws', host='localhost', port=1234))
+  discovery_service.publish(Service(name='test', version='v1', uri='ws://localhost:1234'))
   # Add assertions as necessary
 
 
 def test_unpublish(discovery_service):
   with pytest.raises(RuntimeError):
-      discovery_service.unpublish(Service(name='test', version='v1', protocol='ws', host='localhost', port=1234))
+      discovery_service.unpublish(Service(name='test', version='v1', uri='ws://localhost:1234'))
   asyncio.run(discovery_service.connect('test.mosquitto.org', 1883))
   time.sleep(1)  # Let it connect
-  discovery_service.unpublish(Service(name='test', version='v1', protocol='ws', host='localhost', port=1234))
+  discovery_service.unpublish(Service(name='test', version='v1', uri='ws://localhost:1234'))
   # Add assertions as necessary
 
 
@@ -82,7 +82,7 @@ def test_on_connect_failed(discovery_service):
 
 def test_on_disconnect(discovery_service):
   discovery_service._on_connect(None, None, None, mqtt.CONNACK_ACCEPTED, None)
-  discovery_service.publish(Service(name='test', version='v1', protocol='ws', host='localhost', port=1234))
+  discovery_service.publish(Service(name='test', version='v1', uri='ws://localhost:1234'))
   discovery_service.disconnect()
   discovery_service._on_disconnect(None, None, None, 0, None)
   assert len(discovery_service.subscribed_services) == 0
@@ -94,7 +94,7 @@ def test_on_message(discovery_service):
   callback_mock = AsyncMock()
   discovery_service._on_connect(None, None, None, mqtt.CONNACK_ACCEPTED, None)
   discovery_service.watch('test', callback_mock)
-  discovery_service._on_message(None, None, MagicMock(payload=b'{"service": {"name": "test", "version": "v1", "protocol": "ws", "host": "localhost", "port": 1234}, "available": true}'))
+  discovery_service._on_message(None, None, MagicMock(payload=b'{"service": {"name": "test", "version": "v1", "uri": "ws://localhost:1234"}, "available": true}'))
   time.sleep(1)
   callback_mock.assert_awaited()
 
@@ -104,7 +104,7 @@ def test_on_service_unavailability_message(discovery_service):
   on_unavailable_callback_mock = AsyncMock()
   discovery_service._on_connect(None, None, None, mqtt.CONNACK_ACCEPTED, None)
   discovery_service.watch('test', on_available_callback_mock, on_unavailable_callback_mock)
-  discovery_service._on_message(None, None, MagicMock(payload=b'{"service": {"name": "test", "version": "v1", "protocol": "ws", "host": "localhost", "port": 1234}, "available": false}'))
+  discovery_service._on_message(None, None, MagicMock(payload=b'{"service": {"name": "test", "version": "v1", "uri": "ws://localhost:1234"}, "available": false}'))
   time.sleep(1)
   on_available_callback_mock.assert_not_awaited()
   on_unavailable_callback_mock.assert_awaited()

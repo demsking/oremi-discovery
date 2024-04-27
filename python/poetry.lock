@@ -46,26 +46,6 @@ files = [
 pyreadline3 = {version = "*", markers = "sys_platform == \"win32\" and python_version >= \"3.8\""}
 
 [[package]]
-name = "importlib-metadata"
-version = "7.1.0"
-description = "Read metadata from Python packages"
-category = "dev"
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "importlib_metadata-7.1.0-py3-none-any.whl", hash = "sha256:30962b96c0c223483ed6cc7280e7f0199feb01a0e40cfae4d4450fc6fab1f570"},
-    {file = "importlib_metadata-7.1.0.tar.gz", hash = "sha256:b78938b926ee8d5f020fc4772d487045805a55ddbad2ecf21c6d60938dc7fcd2"},
-]
-
-[package.dependencies]
-zipp = ">=0.5"
-
-[package.extras]
-docs = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-lint"]
-perf = ["ipython"]
-testing = ["flufl.flake8", "importlib-resources (>=1.3)", "jaraco.test (>=5.4)", "packaging", "pyfakefs", "pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-mypy", "pytest-perf (>=0.9.2)", "pytest-ruff (>=0.2.1)"]
-
-[[package]]
 name = "jedi"
 version = "0.19.1"
 description = "An autocompletion tool for Python that can be used for text editors."
@@ -213,7 +193,6 @@ files = [
 
 [package.dependencies]
 docstring-to-markdown = "*"
-importlib-metadata = {version = ">=4.8.3", markers = "python_version < \"3.10\""}
 jedi = ">=0.17.2,<0.20.0"
 pluggy = ">=1.0.0"
 python-lsp-jsonrpc = ">=1.1.0,<2.0.0"
@@ -234,6 +213,21 @@ websockets = ["websockets (>=10.3)"]
 yapf = ["whatthepatch (>=1.0.2,<2.0.0)", "yapf (>=0.33.0)"]
 
 [[package]]
+name = "pyupgrade"
+version = "3.15.2"
+description = "A tool to automatically upgrade syntax for newer versions."
+category = "dev"
+optional = false
+python-versions = ">=3.8.1"
+files = [
+    {file = "pyupgrade-3.15.2-py2.py3-none-any.whl", hash = "sha256:ce309e0ff8ecb73f56a45f12570be84bbbde9540d13697cacb261a7f595fb1f5"},
+    {file = "pyupgrade-3.15.2.tar.gz", hash = "sha256:c488d6896c546d25845712ef6402657123008d56c1063174e27aabe15bd6b4e5"},
+]
+
+[package.dependencies]
+tokenize-rt = ">=5.2.0"
+
+[[package]]
 name = "six"
 version = "1.16.0"
 description = "Python 2 and 3 compatibility utilities"
@@ -243,6 +237,18 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 files = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
+]
+
+[[package]]
+name = "tokenize-rt"
+version = "5.2.0"
+description = "A wrapper around the stdlib `tokenize` which roundtrips."
+category = "dev"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "tokenize_rt-5.2.0-py2.py3-none-any.whl", hash = "sha256:b79d41a65cfec71285433511b50271b05da3584a1da144a0752e9c621a285289"},
+    {file = "tokenize_rt-5.2.0.tar.gz", hash = "sha256:9fe80f8a5c1edad2d3ede0f37481cc0cc1538a2f442c9c2f9e4feacd2792d054"},
 ]
 
 [[package]]
@@ -400,23 +406,7 @@ files = [
     {file = "websockets-11.0.3.tar.gz", hash = "sha256:88fc51d9a26b10fc331be344f1781224a375b78488fc343620184e95a4b27016"},
 ]
 
-[[package]]
-name = "zipp"
-version = "3.18.1"
-description = "Backport of pathlib-compatible object wrapper for zip files"
-category = "dev"
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "zipp-3.18.1-py3-none-any.whl", hash = "sha256:206f5a15f2af3dbaee80769fb7dc6f249695e940acca08dfb2a4769fe61e538b"},
-    {file = "zipp-3.18.1.tar.gz", hash = "sha256:2884ed22e7d8961de1c9a05142eb69a247f120291bc0206a00a7642f09b5b715"},
-]
-
-[package.extras]
-docs = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-lint"]
-testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-ignore-flaky", "pytest-mypy", "pytest-ruff (>=0.2.1)"]
-
 [metadata]
 lock-version = "2.0"
-python-versions = ">=3.8,<4.0"
-content-hash = "3045007529201c057516dd2a511422499bad37e22e7409ea698c2cb584f8a2af"
+python-versions = ">=3.10,<4.0"
+content-hash = "58b74e867c5261a7f55588d27943e077fe9dc857781b26dd9ca82fc9a4ac2f51"

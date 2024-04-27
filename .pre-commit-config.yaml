@@ -35,17 +35,6 @@ repos:
     rev: 0.28.1
     hooks:
       - id: check-gitlab-ci
-  - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.3.5
-    hooks:
-      - id: ruff
-  - repo: https://github.com/pre-commit/pygrep-hooks
-    rev: v1.10.0
-    hooks:
-      - id: python-check-mock-methods
-      - id: python-no-eval
-      - id: python-no-log-warn
-      - id: python-use-type-annotations
   - repo: https://github.com/asottile/reorder-python-imports
     rev: v3.12.0
     hooks:
@@ -71,14 +60,24 @@ repos:
           # Error codes: https://pycodestyle.pycqa.org/en/latest/intro.html#error-codes
           '--ignore', 'E1,E501',
         ]
-  - repo: https://github.com/PyCQA/doc8
-    rev: v1.1.1
-    hooks:
-      - id: doc8
-  - repo: local
-    hooks:
       - id: run-pytest
         name: Run Pytest
         entry: make test-python
         language: system
         types: [python]
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.15.2
+    hooks:
+      - id: pyupgrade
+        args: [--py310-plus]
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.3.5
+    hooks:
+      - id: ruff
+  - repo: https://github.com/pre-commit/pygrep-hooks
+    rev: v1.10.0
+    hooks:
+      - id: python-check-mock-methods
+      - id: python-no-eval
+      - id: python-no-log-warn
+      - id: python-use-type-annotations

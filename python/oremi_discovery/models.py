@@ -13,8 +13,6 @@
 # limitations under the License.
 # ==============================================================================
 import json
-from typing import Optional
-from typing import Union
 
 
 class Service:
@@ -22,35 +20,27 @@ class Service:
     self,
     *,
     name: str,
-    protocol: str,
-    host: str,
-    port: int,
-    version: Optional[str] = None,
-    data: Optional[dict] = None,
+    uri: str,
+    version: str | None = None,
+    data: dict | None = None,
   ) -> None:
     self.name = name
-    self.protocol = protocol
-    self.host = host
-    self.port = port
+    self.uri = uri
     self.version = version
     self.data = data or {}
 
-  @property
-  def uri(self) -> str:
-    return f'{self.protocol}://{self.host}:{self.port}'
-
   def __str__(self) -> str:
-    return f'{self.name}@{self.uri}'
+    return f'{self.name} uri: {self.uri}'
 
   def __hash__(self) -> int:
-    return hash((self.name, self.host, self.port))
+    return hash((self.name, self.uri))
 
   @classmethod
   def from_dict(cls, data: dict):
     return cls(**data)
 
   @classmethod
-  def from_json(cls, json_str: Union[str, bytes, bytearray]):
+  def from_json(cls, json_str: str | bytes | bytearray):
     json_data = json.loads(json_str)
     return cls(**json_data)
 
@@ -67,7 +57,7 @@ class SubscriptionMessage:
     self.available = available
 
   @classmethod
-  def from_json(cls, json_str: Union[str, bytes, bytearray]):
+  def from_json(cls, json_str: str | bytes | bytearray):
     json_data = json.loads(json_str)
     service = Service.from_dict(json_data['service'])
     return cls(service=service, available=json_data['available'])

@@ -16,10 +16,9 @@ import asyncio
 import logging
 import threading
 import uuid
+from collections.abc import Callable
+from collections.abc import Coroutine
 from typing import Any
-from typing import Callable
-from typing import Coroutine
-from typing import Optional
 
 import paho.mqtt.client as mqtt
 from oremi_core.event import Event
@@ -34,7 +33,7 @@ class DiscoveryService:
   def __init__(
     self,
     *,
-    client_id: Optional[str] = None,
+    client_id: str | None = None,
     channel: str = 'discovery',
     logger: logging.Logger,
   ) -> None:
@@ -47,7 +46,7 @@ class DiscoveryService:
 
     self.channel = channel
     self.logger = logger
-    self.subscriptions: dict[str, tuple[Event, ServiceWatchNotify, Optional[ServiceWatchNotify]]] = {}
+    self.subscriptions: dict[str, tuple[Event, ServiceWatchNotify, ServiceWatchNotify | None]] = {}
     self.subscribed_services: set[Service] = set()
 
     self.client.on_connect = self._on_connect
@@ -94,7 +93,7 @@ class DiscoveryService:
     properties.UserProperty = ('client_id', self.client_id)
 
     self.client.publish(topic, payload=payload, qos=1, retain=True, properties=properties)
-    self.logger.info(f'Published service availability {service.name}')
+    self.logger.info(f'Published service availability {service} on channel {self.channel}')
     self.subscribed_services.add(service)
 
   def unpublish(self, service: Service) -> None:
@@ -108,8 +107,8 @@ class DiscoveryService:
     properties = mqtt.Properties(mqtt.PacketTypes.PUBLISH)
     properties.UserProperty = ('client_id', self.client_id)
 
-    self.client.publish(topic, payload=payload, qos=1, retain=False, properties=properties)
-    self.logger.info(f'Published service unavailability {service.name}')
+    self.client.publish(topic, payload=payload, qos=1, retain=True, properties=properties)
+    self.logger.info(f'Published service unavailability {service} on channel {self.channel}')
 
     if service in self.subscribed_services:
       self.subscribed_services.remove(service)
@@ -118,7 +117,7 @@ class DiscoveryService:
     self,
     service_name: str,
     on_service_available: ServiceWatchNotify,
-    on_service_unavailable: Optional[ServiceWatchNotify] = None,
+    on_service_unavailable: ServiceWatchNotify | None = None,
   ) -> Event:
     if not self.connected:
       raise RuntimeError(f'Client {self.client_id} is not connected.')
@@ -131,7 +130,7 @@ class DiscoveryService:
 
     self.client.subscribe(topic, qos=1)
     self.subscriptions[service_name] = event, on_service_available, on_service_unavailable
-    self.logger.info(f'Subscribed to service availability {service_name}')
+    self.logger.info(f'Subscribed to service availability {service_name} on channel {self.channel}')
 
     return event
 
@@ -143,7 +142,7 @@ class DiscoveryService:
     event = self.subscriptions[service_name][0]
     event.set()
     del self.subscriptions[service_name]
-    self.logger.info(f'Unsubscribed from service availability {service_name}')
+    self.logger.info(f'Unsubscribed from service availability {service_name} from channel {self.channel}')
 
   def _on_connect(self, client, userdata, flags, reason_code, properties) -> None:
     if reason_code == mqtt.CONNACK_ACCEPTED:

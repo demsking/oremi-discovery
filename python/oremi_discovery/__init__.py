@@ -43,9 +43,7 @@ async def start() -> None:
   service = Service(
     name=args.service_name,
     version=args.service_version,
-    protocol=args.service_protocol,
-    host=args.service_host,
-    port=args.service_port,
+    uri=args.service_uri,
     data=json.loads(args.service_data),
   )
 
